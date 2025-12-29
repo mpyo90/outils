@@ -28,6 +28,12 @@
 - Code lisible et maintenable
 - Commentaires en français
 - Noms de variables explicites
+- **Rédaction en français correct** :
+  - Respecter les règles typographiques françaises
+  - Pas de majuscules intempestives (ex : éviter "Cliquez sur le Bouton" → préférer "Cliquez sur le bouton")
+  - Seuls les noms propres, débuts de phrase et titres prennent une majuscule
+  - Utiliser les accents correctement (É, è, à, ù, etc.)
+- **Style sobre** : privilégier un ton neutre et professionnel dans tous les textes d'interface
 
 ### Design et interface
 - **Privilégier un design sobre et élégant** :
