@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correcteur de document</title>
+  <title>Correcteur de documents</title>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background-color: #f5f5f0;
@@ -14,17 +15,31 @@
       line-height: 1.6;
       padding: 20px;
     }
-    .container { max-width: 1000px; margin: 0 auto; }
-    h1 { color: #2d2d2d; margin-bottom: 10px; font-size: 2em; text-align: center; }
-    .subtitle { color: #666; margin-bottom: 30px; font-size: 0.95em; text-align: center; }
 
-    .upload-section {
+    .container { max-width: 1000px; margin: 0 auto; }
+
+    h1 {
+      color: #2d2d2d;
+      margin-bottom: 10px;
+      font-size: 2em;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 0.95em;
+      text-align: center;
+    }
+
+    .card {
       background: white;
       padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-bottom: 25px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
     }
+
     .file-input-wrapper { position: relative; margin-bottom: 15px; }
     input[type="file"] { display: none; }
 
@@ -33,205 +48,51 @@
       padding: 15px;
       background: #fafaf8;
       border: 2px dashed #cc785c;
-      border-radius: 8px;
+      border-radius: 10px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .file-label:hover { background: #f0f0eb; border-color: #b86a4e; }
-    .file-label.has-file { border-style: solid; background: #fff8f5; }
 
-    .file-info { margin-top: 10px; font-size: 0.9em; color: #666; }
+    .file-label:hover {
+      background: #f0f0eb;
+      border-color: #b86a4e;
+    }
+
+    .file-label.has-file {
+      border-style: solid;
+      background: #fff8f5;
+    }
+
+    .file-info {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #666;
+    }
 
     button {
       padding: 12px 24px;
       background-color: #cc785c;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 1em;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       transition: background-color 0.2s, transform 0.1s;
       width: 100%;
     }
+
     button:hover:not(:disabled) { background-color: #b86a4e; }
     button:active { transform: scale(0.98); }
     button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
 
-    button.secondary { background-color: #e0e0e0; color: #2d2d2d; }
-    button.secondary:hover:not(:disabled) { background-color: #d0d0d0; }
-
-    .loading-text { font-style: italic; font-weight: normal; opacity: 0.9; }
-    .info-text { font-size: 0.85em; color: #666; font-style: italic; margin-top: 10px; }
-
-    .results-section { display: none; margin-bottom: 25px; }
-    .results-section.visible { display: block; }
-
-    .results-header {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
-    }
-
-    .stats {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-    .stat-item {
-      padding: 10px 15px;
-      background: #f5f5f0;
-      border-radius: 8px;
-      font-size: 0.9em;
-    }
-    .stat-item strong { color: #cc785c; font-size: 1.3em; margin-right: 5px; }
-
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .actions button { flex: 1; min-width: 150px; }
-
-    .filter-search {
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .search-input {
-      flex: 1;
-      min-width: 200px;
-      padding: 10px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 0.95em;
-    }
-    .search-input:focus { outline: none; border-color: #cc785c; }
-
-    .filter-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-    .filter-btn {
-      padding: 8px 16px;
-      background: #e0e0e0;
-      color: #2d2d2d;
-      border: none;
-      border-radius: 6px;
+    .info-text {
       font-size: 0.85em;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .filter-btn:hover { background: #d0d0d0; }
-    .filter-btn.active { background: #cc785c; color: white; }
-
-    .errors-list { display: flex; flex-direction: column; gap: 15px; }
-
-    .error-card {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      overflow: hidden;
-      transition: box-shadow 0.2s;
-    }
-    .error-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
-
-    .error-header {
-      padding: 15px 20px;
-      background: #fafaf8;
-      border-left: 4px solid #cc785c;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-    .error-header-left { flex: 1; }
-    .error-id { font-size: 0.85em; color: #999; margin-bottom: 5px; }
-    .error-location { font-weight: 600; color: #2d2d2d; margin-bottom: 5px; }
-    .error-type {
-      display: inline-block;
-      padding: 3px 10px;
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      font-size: 0.8em;
       color: #666;
-    }
-
-    .error-toggle { font-size: 1.2em; color: #999; transition: transform 0.2s; }
-    .error-card.expanded .error-toggle { transform: rotate(180deg); }
-
-    .error-body { display: none; padding: 20px; border-top: 1px solid #e0e0e0; }
-    .error-card.expanded .error-body { display: block; }
-
-    .error-section { margin-bottom: 15px; }
-    .error-section:last-child { margin-bottom: 0; }
-    .error-section-title {
-      font-size: 0.85em;
-      font-weight: 600;
-      color: #666;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-    }
-    .error-section-content {
-      padding: 12px;
-      background: #fafaf8;
-      border-radius: 6px;
-      font-size: 0.95em;
-    }
-    .error-section-content.erroneous {
-      background: #fff3f3;
-      border-left: 3px solid #e74c3c;
-    }
-    .error-section-content.solution {
-      background: #f0f8f0;
-      border-left: 3px solid #27ae60;
-    }
-    .highlighted-error {
-      background: #ffeb3b;
-      padding: 2px 4px;
-      border-radius: 2px;
-      font-weight: 600;
-    }
-
-    .empty-state { text-align: center; padding: 60px 20px; color: #999; }
-    .empty-state-icon { font-size: 3em; margin-bottom: 15px; }
-
-    .error {
-      background: #ffe6e6;
-      color: #c00;
-      padding: 15px;
-      border-radius: 8px;
-      border-left: 4px solid #c00;
-      margin-top: 15px;
-    }
-
-    .success {
-      background: #e6f7e6;
-      color: #2d2d2d;
-      padding: 10px 15px;
-      border-radius: 6px;
+      font-style: italic;
       margin-top: 10px;
-      font-size: 0.9em;
     }
-
-    .back-link {
-      text-align: center;
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid #e0e0e0;
-    }
-    .back-link a {
-      color: #8a8a8a;
-      text-decoration: none;
-      font-size: 0.95em;
-      transition: color 0.3s;
-    }
-    .back-link a:hover { color: #cc785c; }
 
     .key-management {
       text-align: center;
@@ -239,23 +100,67 @@
       padding-top: 15px;
       border-top: 1px solid #e0e0e0;
     }
+
     .key-management a {
       font-size: 0.85em;
       color: #999;
       text-decoration: none;
       transition: color 0.3s;
     }
+
     .key-management a:hover { color: #cc785c; }
 
-    @media (max-width: 768px) {
-      body { padding: 15px; }
-      h1 { font-size: 1.5em; }
-      .stats { flex-direction: column; gap: 10px; }
-      .actions { flex-direction: column; }
-      .actions button { width: 100%; min-width: unset; }
-      .filter-search { flex-direction: column; }
-      .search-input { width: 100%; min-width: unset; }
-      .error-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .results-card { display: none; }
+    .results-card.visible { display: block; }
+
+    .results-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .count-pill {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #f5f5f0;
+      border-radius: 12px;
+      font-size: 0.95em;
+    }
+
+    .count-pill strong {
+      color: #cc785c;
+      font-size: 1.5em;
+      line-height: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 42px 15px;
+      color: #999;
+      border: 1px dashed #e0e0e0;
+      border-radius: 12px;
+      background: #fafaf8;
+    }
+
+    .empty-state-icon { font-size: 2.6em; margin-bottom: 10px; }
+
+    .error {
+      background: #ffe6e6;
+      color: #c00;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 4px solid #c00;
+      margin-top: 15px;
+    }
+
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s steps(4, end) infinite;
     }
 
     @keyframes dots {
@@ -263,9 +168,153 @@
       40% { content: '..'; }
       60%, 100% { content: '...'; }
     }
-    .loading::after {
-      content: '...';
-      animation: dots 1.5s steps(4, end) infinite;
+
+    /* Cartes */
+    .errors-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .err-card {
+      border: 1px solid #eee;
+      background: linear-gradient(180deg, #ffffff 0%, #fcfcfa 100%);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
+
+    .err-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: #fafaf8;
+      border-bottom: 1px solid #eee;
+    }
+
+    .err-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .err-id {
+      font-size: 0.85em;
+      color: #999;
+    }
+
+    .err-loc {
+      font-weight: 650;
+      color: #2d2d2d;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .err-body {
+      padding: 14px 16px 16px;
+    }
+
+    .err-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .panel {
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #eee;
+      background: #fff;
+    }
+
+    .panel-title {
+      font-size: 0.78em;
+      font-weight: 750;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      background: #cc785c;
+      opacity: 0.9;
+    }
+
+    .panel.erroneous {
+      background: #fff7f7;
+      border-color: #f3d2d2;
+    }
+
+    .panel.solution {
+      background: #f5fbf5;
+      border-color: #d6ead6;
+    }
+
+    .panel.erroneous .dot { background: #e74c3c; }
+    .panel.solution .dot { background: #27ae60; }
+
+    .panel-text {
+      font-size: 0.98em;
+      color: #2d2d2d;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .hl {
+      background: #ffeb3b;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .problem-line {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed #eee;
+      color: #555;
+      font-size: 0.95em;
+    }
+
+    .problem-line strong { color: #2d2d2d; }
+
+    .another {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .another button {
+      background: #e0e0e0;
+      color: #2d2d2d;
+      font-weight: 600;
+    }
+
+    .another button:hover:not(:disabled) { background: #d0d0d0; }
+
+    @media (max-width: 860px) {
+      .err-grid { grid-template-columns: 1fr; }
+      .err-loc { white-space: normal; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 15px; }
+      h1 { font-size: 1.5em; }
+      .results-top { flex-direction: column; align-items: stretch; }
+      .count-pill { justify-content: center; }
     }
   </style>
 </head>
@@ -273,15 +322,15 @@
 <body>
   <div class="container">
     <h1>📝 Correcteur de documents</h1>
-    <p class="subtitle">Détection automatique des fautes et coquilles dans vos documents Word et PDF</p>
+    <p class="subtitle">Détection automatique des fautes et coquilles dans vos documents PDF et DOCX</p>
 
-    <div class="upload-section">
+    <div class="card">
       <div class="file-input-wrapper">
-        <input type="file" id="fileInput" accept=".pdf,.doc,.docx" onchange="handleFileSelect(event)" />
+        <input type="file" id="fileInput" accept=".pdf,.docx" onchange="handleFileSelect(event)" />
         <label for="fileInput" class="file-label" id="fileLabel">
           <div style="font-size: 2em; margin-bottom: 10px;">📄</div>
-          <div style="font-weight: 500; margin-bottom: 5px;">Cliquez pour sélectionner un document</div>
-          <div style="font-size: 0.85em; color: #999;">Formats acceptés : PDF, Word (.doc, .docx)</div>
+          <div style="font-weight: 600; margin-bottom: 5px;">Cliquez pour sélectionner un document</div>
+          <div style="font-size: 0.85em; color: #999;">Formats acceptés : PDF, Word (.docx)</div>
         </label>
         <div id="fileInfo" class="file-info"></div>
       </div>
@@ -289,7 +338,7 @@
       <button id="correctBtn" disabled>Analyser le document</button>
 
       <p class="info-text">
-        L'analyse utilise l'API Gemini Flash Preview pour détecter les fautes d'orthographe, de grammaire, de syntaxe et de ponctuation.
+        La correction est effectuée à l'aide du modèle Gemini 3.0 Flash Preview de Google.
       </p>
 
       <div class="key-management" id="keyManagement" style="display: none;">
@@ -297,56 +346,29 @@
       </div>
     </div>
 
-    <div id="resultsSection" class="results-section">
-      <div class="results-header">
-        <div class="stats">
-          <div class="stat-item">
-            <strong id="totalErrors">0</strong>
-            <span>erreurs trouvées</span>
-          </div>
-          <div class="stat-item" id="visibleErrorsStat" style="display: none;">
-            <strong id="visibleErrors">0</strong>
-            <span>affichées</span>
-          </div>
-        </div>
-        <div class="actions">
-          <!-- ✅ 3.1: on passe event explicitement -->
-          <button onclick="exportJSON(event)">📋 Copier JSON</button>
-          <button onclick="exportCSV()">📊 Exporter CSV</button>
-          <button class="secondary" onclick="resetForm()">🔄 Nouveau document</button>
+    <div class="card results-card" id="resultsCard">
+      <div class="results-top">
+        <div class="count-pill">
+          <strong id="totalErrors">0</strong>
+          <span>erreurs trouvées</span>
         </div>
       </div>
 
-      <div class="filter-search">
-        <input
-          type="text"
-          class="search-input"
-          id="searchInput"
-          placeholder="🔍 Rechercher dans les erreurs..."
-          oninput="filterErrors()"
-        />
-        <div class="filter-buttons">
-          <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">Toutes</button>
-          <button class="filter-btn" data-filter="orthographe" onclick="setFilter('orthographe')">Orthographe</button>
-          <button class="filter-btn" data-filter="grammaire" onclick="setFilter('grammaire')">Grammaire</button>
-          <button class="filter-btn" data-filter="accord" onclick="setFilter('accord')">Accord</button>
-          <button class="filter-btn" data-filter="ponctuation" onclick="setFilter('ponctuation')">Ponctuation</button>
-          <button class="filter-btn" data-filter="syntaxe" onclick="setFilter('syntaxe')">Syntaxe</button>
-        </div>
-      </div>
+      <div id="errorsContainer"></div>
 
-      <div id="errorsList" class="errors-list"></div>
+      <div class="another" id="anotherBlock" style="display:none;">
+        <button type="button" onclick="location.reload()">Corriger un autre document</button>
+      </div>
     </div>
 
-    <div class="back-link">
-      <a href="index.html">← Retour à l'index des outils</a>
+    <div class="back-link" style="text-align:center; margin-top: 34px; padding-top: 18px; border-top:1px solid #e0e0e0;">
+      <a href="index.html" style="color:#8a8a8a; text-decoration:none;">← Retour à l'index des outils</a>
     </div>
   </div>
 
   <script>
     window.selectedFile = null;
     window.allErrors = [];
-    window.currentFilter = 'all';
 
     function handleFileSelect(event) {
       selectedFile = event.target.files[0];
@@ -369,185 +391,76 @@
     }
 
     function displayErrors(errors) {
-      const errorsList = document.getElementById('errorsList');
+      const resultsCard = document.getElementById('resultsCard');
       const totalErrors = document.getElementById('totalErrors');
+      const errorsContainer = document.getElementById('errorsContainer');
+      const anotherBlock = document.getElementById('anotherBlock');
 
+      resultsCard.classList.add('visible');
       totalErrors.textContent = errors.length;
 
       if (errors.length === 0) {
-        errorsList.innerHTML = `
+        errorsContainer.innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon">✨</div>
             <div>Aucune erreur détectée !</div>
-            <div style="font-size: 0.9em; color: #999; margin-top: 10px;">Votre document semble impeccable.</div>
+            <div style="font-size: 0.9em; color: #999; margin-top: 8px;">Votre document semble impeccable.</div>
           </div>
         `;
+        anotherBlock.style.display = 'block';
         return;
       }
 
-      errorsList.innerHTML = errors.map((error, index) => {
-        const highlightedPassage = (error.passage_errone || '')
-          .replace(/\*([^*]+)\*/g, '<span class="highlighted-error">$1</span>');
+      const cards = errors.map((e, idx) => {
+        const id = e.id ?? (idx + 1);
+        const loc = e.localisation ?? '';
+        const prob = e.probleme ?? '';
+        const passage = e.passage_errone ?? '';
+        const sol = e.solution ?? '';
+
+        const passageHtml = escapeHtml(passage).replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
+        const solHtml = escapeHtml(sol);
 
         return `
-          <div class="error-card" data-index="${index}" data-problem="${escapeHtml((error.probleme || '').toLowerCase())}">
-            <div class="error-header" onclick="toggleError(${index})">
-              <div class="error-header-left">
-                <div class="error-id">#${error.id || index + 1}</div>
-                <div class="error-location">${escapeHtml(error.localisation || '')}</div>
-                <span class="error-type">${escapeHtml(error.probleme || '')}</span>
+          <div class="err-card">
+            <div class="err-head">
+              <div class="err-meta">
+                <div class="err-id">#${escapeHtml(String(id))}</div>
+                <div class="err-loc" title="${escapeHtml(loc)}">${escapeHtml(loc)}</div>
               </div>
-              <div class="error-toggle">▼</div>
             </div>
-            <div class="error-body">
-              <div class="error-section">
-                <div class="error-section-title">Passage erroné</div>
-                <div class="error-section-content erroneous">${highlightedPassage}</div>
+
+            <div class="err-body">
+              <div class="err-grid">
+                <div class="panel erroneous">
+                  <div class="panel-title"><span class="dot"></span> Passage erroné</div>
+                  <div class="panel-text">${passageHtml}</div>
+                </div>
+
+                <div class="panel solution">
+                  <div class="panel-title"><span class="dot"></span> Solution</div>
+                  <div class="panel-text">${solHtml}</div>
+                </div>
               </div>
-              <div class="error-section">
-                <div class="error-section-title">Problème</div>
-                <div class="error-section-content">${escapeHtml(error.probleme || '')}</div>
-              </div>
-              <div class="error-section">
-                <div class="error-section-title">Solution</div>
-                <div class="error-section-content solution">${escapeHtml(error.solution || '')}</div>
+
+              <div class="problem-line">
+                <strong>Problème :</strong> ${escapeHtml(prob)}
               </div>
             </div>
           </div>
         `;
       }).join('');
 
-      filterErrors();
-    }
-
-    function toggleError(index) {
-      const card = document.querySelector(`.error-card[data-index="${index}"]`);
-      if (card) card.classList.toggle('expanded');
-    }
-
-    function setFilter(filter) {
-      currentFilter = filter;
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      const active = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
-      if (active) active.classList.add('active');
-      filterErrors();
-    }
-
-    function filterErrors() {
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      const visibleErrorsStat = document.getElementById('visibleErrorsStat');
-      const visibleErrors = document.getElementById('visibleErrors');
-      let visibleCount = 0;
-
-      document.querySelectorAll('.error-card').forEach(card => {
-        const problem = card.dataset.problem || '';
-        const text = (card.textContent || '').toLowerCase();
-
-        const matchesFilter = currentFilter === 'all' || problem.includes(currentFilter);
-        const matchesSearch = searchTerm === '' || text.includes(searchTerm);
-
-        if (matchesFilter && matchesSearch) {
-          card.style.display = 'block';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      if (currentFilter !== 'all' || searchTerm !== '') {
-        visibleErrorsStat.style.display = 'block';
-        visibleErrors.textContent = visibleCount;
-      } else {
-        visibleErrorsStat.style.display = 'none';
-      }
-    }
-
-    // ✅ 3.1: on reçoit event pour accéder à event.target proprement
-    async function exportJSON(event) {
-      if (allErrors.length === 0) {
-        alert('Aucune erreur à exporter');
-        return;
-      }
-
-      const json = JSON.stringify(allErrors, null, 2);
-
-      try {
-        await navigator.clipboard.writeText(json);
-
-        const btn = event?.target;
-        if (btn) {
-          const originalText = btn.textContent;
-          btn.textContent = '✓ Copié !';
-          btn.style.backgroundColor = '#4caf50';
-
-          setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.backgroundColor = '';
-          }, 2000);
-        }
-      } catch (error) {
-        alert('Erreur lors de la copie. Voici le JSON :\n\n' + json);
-      }
-    }
-
-    function exportCSV() {
-      if (allErrors.length === 0) {
-        alert('Aucune erreur à exporter');
-        return;
-      }
-
-      const headers = ['ID', 'Localisation', 'Passage erroné', 'Problème', 'Solution'];
-      const rows = allErrors.map(error => [
-        error.id || '',
-        error.localisation || '',
-        error.passage_errone || '',
-        error.probleme || '',
-        error.solution || ''
-      ]);
-
-      const csvContent = [
-        headers.join(','),
-        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      ].join('\n');
-
-      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-
-      link.setAttribute('href', url);
-      link.setAttribute('download', `corrections_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.display = 'none';
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function resetForm() {
-      selectedFile = null;
-      allErrors = [];
-      currentFilter = 'all';
-
-      document.getElementById('fileInput').value = '';
-      document.getElementById('fileLabel').classList.remove('has-file');
-      document.getElementById('fileInfo').innerHTML = '';
-      document.getElementById('correctBtn').disabled = true;
-      document.getElementById('resultsSection').classList.remove('visible');
-      document.getElementById('searchInput').value = '';
-
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-      if (allBtn) allBtn.classList.add('active');
+      errorsContainer.innerHTML = `<div class="errors-list">${cards}</div>`;
+      anotherBlock.style.display = 'block';
     }
 
     function deleteGeminiKey() {
       const currentKey = localStorage.getItem('gemini-api-key');
-
       if (!currentKey) {
         alert('Aucune clé API Gemini enregistrée.');
         return;
       }
-
       if (confirm('Voulez-vous vraiment supprimer la clé API Gemini enregistrée ?\n\nVous devrez la saisir à nouveau lors de la prochaine analyse.')) {
         localStorage.removeItem('gemini-api-key');
         alert('✓ Clé API supprimée avec succès');
@@ -578,12 +491,19 @@
     document.addEventListener('DOMContentLoaded', updateKeyManagementVisibility);
   </script>
 
-  <!-- ✅ 2) Script module : inlineData (base64), sans GoogleAIFileManager -->
+  <!-- ✅ Mammoth pour DOCX -->
+  <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+
+  <!-- ✅ Gemini + timeout 180s + retry fallback -->
   <script type="module">
     import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
+    function extLower(name) {
+      const m = (name || "").toLowerCase().match(/\.([a-z0-9]+)$/);
+      return m ? m[1] : "";
+    }
+
     function arrayBufferToBase64(buffer) {
-      // conversion chunkée (évite call stack sur gros fichiers)
       let binary = "";
       const bytes = new Uint8Array(buffer);
       const chunkSize = 0x8000;
@@ -593,13 +513,191 @@
       return btoa(binary);
     }
 
+    function formatAnyError(err) {
+      const lines = [];
+      lines.push(`Type: ${err?.name || "Error"}`);
+      if (err?.message) lines.push(`Message: ${err.message}`);
+      if (err?.stack) {
+        lines.push("");
+        lines.push("Stack:");
+        lines.push(err.stack);
+      }
+      return lines.join("\n");
+    }
+
+    function showBigErrorOnPage(err, extraHint = "") {
+      const errorsContainer = document.getElementById("errorsContainer");
+      const totalErrors = document.getElementById("totalErrors");
+      const anotherBlock = document.getElementById("anotherBlock");
+
+      if (totalErrors) totalErrors.textContent = "0";
+
+      const detail = formatAnyError(err);
+      const hint = extraHint
+        ? `<div style="margin-top:10px;color:#666;font-size:0.9em;white-space:normal;">${extraHint}</div>`
+        : "";
+
+      errorsContainer.innerHTML = `
+        <div class="error">
+          <strong>Erreur (détails complets) :</strong>
+          ${hint}
+          <pre style="margin-top:10px;white-space:pre-wrap;word-break:break-word;overflow:auto;background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.08);max-height:420px;">${window.escapeHtml(detail)}</pre>
+        </div>
+      `;
+      anotherBlock.style.display = "block";
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function generateWithTimeout(model, parts, ms = 180000) {
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("TIMEOUT_CLIENT_180S")), ms);
+      });
+
+      const reqPromise = model.generateContent({
+        contents: [{ role: "user", parts }]
+      });
+
+      return await Promise.race([reqPromise, timeoutPromise]);
+    }
+
+    function buildModel(genAI, { thinkingLevel, mediaResolution }) {
+      return genAI.getGenerativeModel({
+        model: "gemini-3-flash-preview",
+        generationConfig: {
+          temperature: 0.3,
+          thinkingConfig: { thinkingLevel },
+          mediaResolution
+        }
+      });
+    }
+
+    function isLikelyNetworkOrTimeout(err) {
+      const msg = (err?.message || "").toLowerCase();
+      return (
+        msg.includes("load failed") ||
+        msg.includes("failed to fetch") ||
+        msg.includes("network") ||
+        msg.includes("connexion réseau") ||
+        msg.includes("timeout_client_180s") ||
+        msg.includes("timeout") ||
+        msg.includes("timed out")
+      );
+    }
+
+    function makePrompt(kind /* "pdf" | "docx" */) {
+      if (kind === "docx") {
+        return `Tu es un correcteur professionnel.
+Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles, pas sur le style.
+
+Le document est fourni sous forme de blocs repérés par des identifiants (ex: P12, H2-3, LI7).
+IMPORTANT : dans "localisation", tu dois mettre l'identifiant du bloc concerné sous une forme explicite (ex: "Paragraphe 12") — rien d'autre.
+
+Consignes de formatage strictes :
+Ta réponse doit être un tableau JSON valide contenant une liste d'objets.
+N'écris aucune phrase d'introduction ou de conclusion (pas de markdown).
+Respecte scrupuleusement cette structure pour chaque erreur :
+[
+  {
+    "id": 1,
+    "localisation": "Paragraphe 12",
+    "passage_errone": "Recopie le passage. Mets la faute ou coquille entre astérisques (ex: le *chatte* noir)",
+    "probleme": "Explique simplement l'erreur (ex: accord incorrect)",
+    "solution": "Le passage entièrement corrigé"
+  }
+]`;
+      }
+
+      return `Tu es un correcteur professionnel.
+Tu dois relire attentivement le document PDF fourni en pièce jointe et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles, pas sur le style.
+
+Consignes de formatage strictes :
+Ta réponse doit être un tableau JSON valide contenant une liste d'objets.
+N'écris aucune phrase d'introduction ou de conclusion (pas de markdown).
+Respecte scrupuleusement cette structure pour chaque erreur :
+[
+  {
+    "id": 1,
+    "localisation": "Page N° ou Section",
+    "passage_errone": "Recopie le passage. Mets la faute ou coquille entre astérisques (ex: le *chatte* noir)",
+    "probleme": "Explique simplement l'erreur (ex: accord incorrect)",
+    "solution": "Le passage entièrement corrigé"
+  }
+]`;
+    }
+
+    async function extractDocxToLabeledText(arrayBuffer) {
+      if (!window.mammoth?.convertToHtml) {
+        throw new Error("Mammoth n'est pas chargé : impossible de lire le DOCX.");
+      }
+
+      const res = await window.mammoth.convertToHtml({ arrayBuffer });
+      const html = (res?.value || "").trim();
+      if (!html) return "";
+
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const body = doc.body;
+
+      let pCount = 0;
+      const hCount = { 1:0,2:0,3:0,4:0,5:0,6:0 };
+      let liCount = 0;
+
+      // On parcourt dans l'ordre DOM, et on ne garde que des blocs utiles
+      const blocks = [];
+      const elements = body.querySelectorAll("h1,h2,h3,h4,h5,h6,p,li");
+
+      elements.forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        const text = (el.textContent || "").replace(/\s+\n/g, "\n").trim();
+        if (!text) return;
+
+        if (tag === "p") {
+          pCount += 1;
+          blocks.push(`[P${pCount}] ${text}`);
+          return;
+        }
+
+        if (tag === "li") {
+          liCount += 1;
+          blocks.push(`[LI${liCount}] ${text}`);
+          return;
+        }
+
+        // headings
+        const level = parseInt(tag.replace("h",""), 10);
+        if (!Number.isNaN(level) && level >= 1 && level <= 6) {
+          hCount[level] += 1;
+          blocks.push(`[H${level}-${hCount[level]}] ${text}`);
+        }
+      });
+
+      return blocks.join("\n\n");
+    }
+
+    function clampText(s, maxChars = 140000) {
+      if (!s) return s;
+      if (s.length <= maxChars) return s;
+      return s.slice(0, maxChars) + "\n\n[... contenu tronqué ...]";
+    }
+
     async function correctDocument() {
       if (!window.selectedFile) {
         alert("Veuillez sélectionner un fichier");
         return;
       }
 
-      // clé API
+      const file = window.selectedFile;
+      const ext = extLower(file.name);
+
+      const isPdf = (file.type === "application/pdf") || ext === "pdf";
+      const isDocx = ext === "docx" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+      if (!isPdf && !isDocx) {
+        document.getElementById("resultsCard").classList.add("visible");
+        showBigErrorOnPage(new Error("Format non pris en charge."), "Formats acceptés : PDF, DOCX.");
+        return;
+      }
+
       let apiKey = localStorage.getItem("gemini-api-key");
       if (!apiKey) {
         apiKey = prompt(
@@ -613,59 +711,81 @@
 
       const correctBtn = document.getElementById("correctBtn");
       const originalText = correctBtn.textContent;
-      const resultsSection = document.getElementById("resultsSection");
-      const errorsList = document.getElementById("errorsList");
+      const resultsCard = document.getElementById("resultsCard");
+      const errorsContainer = document.getElementById("errorsContainer");
+      const totalErrors = document.getElementById("totalErrors");
 
       try {
         correctBtn.disabled = true;
         correctBtn.innerHTML = '<span class="loading">Analyse en cours</span>';
 
-        resultsSection.classList.add("visible");
-        errorsList.innerHTML =
-          '<div class="empty-state"><div class="loading">Lecture et analyse du document</div></div>';
+        resultsCard.classList.add("visible");
+        if (totalErrors) totalErrors.textContent = "…";
+        errorsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="loading">Lecture et analyse du document</div>
+          </div>
+        `;
 
-        const file = window.selectedFile;
         const buffer = await file.arrayBuffer();
-        const base64 = arrayBufferToBase64(buffer);
-
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-          model: "gemini-3-flash-preview",
-          generationConfig: {
-            temperature: 0.3
-          }
+
+        // tentative 1 : tes réglages
+        let model = buildModel(genAI, {
+          thinkingLevel: "HIGH",
+          mediaResolution: "MEDIA_RESOLUTION_HIGH"
         });
 
-        const prompt = `Tu es un correcteur professionnel.
-Tu dois relire attentivement le document fourni en pièce jointe et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles, pas sur le style. Ne tiens pas compte des problèmes d'apostrophes, d'exposants ou ceux liés au format du document fourni.
+        let parts;
 
-Consignes de formatage strictes :
-Ta réponse doit être un tableau JSON valide contenant une liste d'objets.
-N'écris aucune phrase d'introduction ou de conclusion (pas de "Voici les corrections", pas de markdown \`\`\`json, juste le code brut).
-Respecte scrupuleusement cette structure pour chaque erreur :
-[
-  {
-    "id": 1,
-    "localisation": "Indique la Page N° ou la Section",
-    "passage_errone": "Recopie le passage. Mets la faute ou coquille entre astérisques (ex: le *chatte* noir)",
-    "probleme": "Explique simplement l'erreur (ex: accord incorrect)",
-    "solution": "Le passage entièrement corrigé"
-  }
-]`;
+        if (isPdf) {
+          const base64 = arrayBufferToBase64(buffer);
+          const prompt = makePrompt("pdf");
+          parts = [
+            { inlineData: { mimeType: "application/pdf", data: base64 } },
+            { text: prompt }
+          ];
+        } else {
+          const labeled = clampText(await extractDocxToLabeledText(buffer), 140000);
+          if (!labeled) {
+            throw new Error("Impossible d'extraire du texte du DOCX (document vide ?).");
+          }
+          const prompt = makePrompt("docx");
+          parts = [
+            { text: prompt + "\n\n--- DOCUMENT BALISÉ ---\n" + labeled }
+          ];
+        }
 
-        const result = await model.generateContent([
-          {
-            inlineData: {
-              mimeType: file.type || "application/pdf",
-              data: base64
-            }
-          },
-          { text: prompt }
-        ]);
+        let result;
+        try {
+          result = await generateWithTimeout(model, parts, 180000);
+        } catch (err1) {
+          if (isLikelyNetworkOrTimeout(err1)) {
+            errorsContainer.innerHTML = `
+              <div class="empty-state">
+                <div class="loading">Requête interrompue (réseau/temps). Nouvelle tentative en mode allégé</div>
+                <div style="margin-top:10px;color:#777;font-size:0.9em;">
+                  (thinking: MEDIUM, mediaResolution: MEDIUM)
+                </div>
+              </div>
+            `;
+
+            await sleep(600);
+
+            model = buildModel(genAI, {
+              thinkingLevel: "MEDIUM",
+              mediaResolution: "MEDIA_RESOLUTION_MEDIUM"
+            });
+
+            result = await generateWithTimeout(model, parts, 180000);
+          } else {
+            showBigErrorOnPage(err1);
+            throw err1;
+          }
+        }
 
         let responseText = (await result.response).text().trim();
 
-        // nettoyage markdown si jamais
         if (responseText.startsWith("```")) {
           responseText = responseText
             .replace(/^```[a-z]*\s*/i, "")
@@ -679,45 +799,18 @@ Respecte scrupuleusement cette structure pour chaque erreur :
 
         window.displayErrors(window.allErrors);
 
-        // feedback succès
-        const successMsg = document.createElement("div");
-        successMsg.className = "success";
-        successMsg.textContent = `✓ Analyse terminée ! ${window.allErrors.length} erreur${window.allErrors.length > 1 ? "s" : ""} détectée${window.allErrors.length > 1 ? "s" : ""}.`;
-        document.querySelector(".upload-section").appendChild(successMsg);
-        setTimeout(() => successMsg.remove(), 4000);
-
       } catch (error) {
-        console.error("Erreur:", error);
-
-        let errorMessage = "Erreur lors de l'analyse du document :\n\n";
-        if (error?.message && error.message.includes("API key")) {
-          errorMessage += "Clé API invalide. Veuillez vérifier votre clé.\n\nVoulez-vous entrer une nouvelle clé ?";
-          if (confirm(errorMessage)) {
-            localStorage.removeItem("gemini-api-key");
-            window.updateKeyManagementVisibility?.();
-            return correctDocument();
-          }
-        } else if (error?.message && error.message.toLowerCase().includes("quota")) {
-          errorMessage += "Quota dépassé. Veuillez réessayer plus tard ou vérifier votre compte sur Google AI Studio.";
-          alert(errorMessage);
-        } else {
-          errorMessage += error?.message || "Erreur inconnue";
-          alert(errorMessage);
+        const html = document.getElementById("errorsContainer")?.innerHTML || "";
+        if (!html.includes("Erreur (détails complets)")) {
+          showBigErrorOnPage(error);
         }
-
-        errorsList.innerHTML = `
-          <div class="error">
-            <strong>Erreur :</strong><br>
-            ${window.escapeHtml?.(error?.message || "Une erreur est survenue") || (error?.message || "Une erreur est survenue")}
-          </div>
-        `;
+        console.error("Erreur:", error);
       } finally {
         correctBtn.disabled = false;
         correctBtn.textContent = originalText;
       }
     }
 
-    // Attacher le handler au bouton
     document.getElementById("correctBtn").addEventListener("click", correctDocument);
   </script>
 </body>
