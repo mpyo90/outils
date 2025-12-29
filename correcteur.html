@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correcteur de documents</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f0;
+            color: #2d2d2d;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2d2d2d;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            display: block;
+            padding: 15px;
+            background: #fafaf8;
+            border: 2px dashed #cc785c;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-label:hover {
+            background: #f0f0eb;
+            border-color: #b86a4e;
+        }
+
+        .file-label.has-file {
+            border-style: solid;
+            background: #fff8f5;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #cc785c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            width: 100%;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #b86a4e;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background-color: #e0e0e0;
+            color: #2d2d2d;
+        }
+
+        button.secondary:hover:not(:disabled) {
+            background-color: #d0d0d0;
+        }
+
+        .loading-text {
+            font-style: italic;
+            font-weight: normal;
+            opacity: 0.9;
+        }
+
+        .info-text {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .results-section {
+            display: none;
+            margin-bottom: 25px;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        .results-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            padding: 10px 15px;
+            background: #f5f5f0;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .stat-item strong {
+            color: #cc785c;
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-search {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #cc785c;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #e0e0e0;
+            color: #2d2d2d;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover {
+            background: #d0d0d0;
+        }
+
+        .filter-btn.active {
+            background: #cc785c;
+            color: white;
+        }
+
+        .errors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .error-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .error-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .error-header {
+            padding: 15px 20px;
+            background: #fafaf8;
+            border-left: 4px solid #cc785c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .error-header-left {
+            flex: 1;
+        }
+
+        .error-id {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .error-location {
+            font-weight: 600;
+            color: #2d2d2d;
+            margin-bottom: 5px;
+        }
+
+        .error-type {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .error-toggle {
+            font-size: 1.2em;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .error-card.expanded .error-toggle {
+            transform: rotate(180deg);
+        }
+
+        .error-body {
+            display: none;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .error-card.expanded .error-body {
+            display: block;
+        }
+
+        .error-section {
+            margin-bottom: 15px;
+        }
+
+        .error-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .error-section-title {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .error-section-content {
+            padding: 12px;
+            background: #fafaf8;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .error-section-content.erroneous {
+            background: #fff3f3;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .error-section-content.solution {
+            background: #f0f8f0;
+            border-left: 3px solid #27ae60;
+        }
+
+        .highlighted-error {
+            background: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #c00;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c00;
+            margin-top: 15px;
+        }
+
+        .success {
+            background: #e6f7e6;
+            color: #2d2d2d;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .back-link a {
+            color: #8a8a8a;
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #cc785c;
+        }
+
+        .key-management {
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .key-management a {
+            font-size: 0.85em;
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .key-management a:hover {
+            color: #cc785c;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .actions button {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .filter-search {
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .error-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Correcteur de documents</h1>
+        <p class="subtitle">Détection automatique des fautes et coquilles dans vos documents Word et PDF</p>
+
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".pdf,.doc,.docx" onchange="handleFileSelect(event)">
+                <label for="fileInput" class="file-label" id="fileLabel">
+                    <div style="font-size: 2em; margin-bottom: 10px;">📄</div>
+                    <div style="font-weight: 500; margin-bottom: 5px;">Cliquez pour sélectionner un document</div>
+                    <div style="font-size: 0.85em; color: #999;">Formats acceptés : PDF, Word (.doc, .docx)</div>
+                </label>
+                <div id="fileInfo" class="file-info"></div>
+            </div>
+
+            <button id="correctBtn" onclick="correctDocument()" disabled>Analyser le document</button>
+
+            <p class="info-text">
+                L'analyse utilise l'API Gemini Flash Preview pour détecter les fautes d'orthographe, de grammaire, de syntaxe et de ponctuation.
+            </p>
+
+            <div class="key-management" id="keyManagement" style="display: none;">
+                <a href="#" onclick="deleteGeminiKey(); return false;">🗑️ Supprimer la clé API Gemini</a>
+            </div>
+        </div>
+
+        <div id="resultsSection" class="results-section">
+            <div class="results-header">
+                <div class="stats">
+                    <div class="stat-item">
+                        <strong id="totalErrors">0</strong>
+                        <span>erreurs trouvées</span>
+                    </div>
+                    <div class="stat-item" id="visibleErrorsStat" style="display: none;">
+                        <strong id="visibleErrors">0</strong>
+                        <span>affichées</span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button onclick="exportJSON()">📋 Copier JSON</button>
+                    <button onclick="exportCSV()">📊 Exporter CSV</button>
+                    <button class="secondary" onclick="resetForm()">🔄 Nouveau document</button>
+                </div>
+            </div>
+
+            <div class="filter-search">
+                <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="🔍 Rechercher dans les erreurs..."
+                    oninput="filterErrors()"
+                >
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">Toutes</button>
+                    <button class="filter-btn" data-filter="orthographe" onclick="setFilter('orthographe')">Orthographe</button>
+                    <button class="filter-btn" data-filter="grammaire" onclick="setFilter('grammaire')">Grammaire</button>
+                    <button class="filter-btn" data-filter="accord" onclick="setFilter('accord')">Accord</button>
+                    <button class="filter-btn" data-filter="ponctuation" onclick="setFilter('ponctuation')">Ponctuation</button>
+                    <button class="filter-btn" data-filter="syntaxe" onclick="setFilter('syntaxe')">Syntaxe</button>
+                </div>
+            </div>
+
+            <div id="errorsList" class="errors-list"></div>
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">← Retour à l'index des outils</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI, GoogleAIFileManager } from "https://esm.run/@google/generative-ai";
+
+        let selectedFile = null;
+        let allErrors = [];
+        let currentFilter = 'all';
+
+        window.handleFileSelect = function(event) {
+            selectedFile = event.target.files[0];
+            const fileLabel = document.getElementById('fileLabel');
+            const fileInfo = document.getElementById('fileInfo');
+            const correctBtn = document.getElementById('correctBtn');
+
+            if (selectedFile) {
+                fileLabel.classList.add('has-file');
+                fileInfo.innerHTML = `
+                    <strong>✓ Fichier sélectionné :</strong> ${escapeHtml(selectedFile.name)}
+                    (${formatFileSize(selectedFile.size)})
+                `;
+                correctBtn.disabled = false;
+            } else {
+                fileLabel.classList.remove('has-file');
+                fileInfo.innerHTML = '';
+                correctBtn.disabled = true;
+            }
+        };
+
+        window.correctDocument = async function() {
+            if (!selectedFile) {
+                alert('Veuillez sélectionner un fichier');
+                return;
+            }
+
+            // Vérifier/obtenir la clé API
+            let apiKey = localStorage.getItem('gemini-api-key');
+
+            if (!apiKey) {
+                apiKey = prompt('Entrez votre clé API Google Gemini :\n\nVous pouvez obtenir une clé gratuite sur :\nhttps://aistudio.google.com/app/apikey\n\n(Elle sera stockée localement dans votre navigateur)');
+
+                if (!apiKey || apiKey.trim() === '') {
+                    return; // Annulé par l'utilisateur
+                }
+
+                apiKey = apiKey.trim();
+                localStorage.setItem('gemini-api-key', apiKey);
+                updateKeyManagementVisibility();
+            }
+
+            const correctBtn = document.getElementById('correctBtn');
+            const originalText = correctBtn.textContent;
+            const resultsSection = document.getElementById('resultsSection');
+            const errorsList = document.getElementById('errorsList');
+
+            try {
+                // Désactiver le bouton et afficher le chargement
+                correctBtn.disabled = true;
+                correctBtn.innerHTML = '<span class="loading">Analyse en cours</span>';
+
+                // Afficher la section résultats avec un état de chargement
+                resultsSection.classList.add('visible');
+                errorsList.innerHTML = '<div class="empty-state"><div class="loading">Upload et analyse du document</div></div>';
+
+                // Initialiser le File Manager
+                const fileManager = new GoogleAIFileManager(apiKey);
+
+                // Upload du fichier
+                const uploadResult = await fileManager.uploadFile(selectedFile.name, selectedFile);
+
+                // Initialiser Gemini
+                const genAI = new GoogleGenerativeAI(apiKey);
+                const model = genAI.getGenerativeModel({
+                    model: "gemini-3-flash-preview",
+                    generationConfig: {
+                        temperature: 0.3,
+                        thinkingConfig: {
+                            thinkingLevel: "HIGH"
+                        },
+                        mediaResolution: "MEDIA_RESOLUTION_HIGH"
+                    }
+                });
+
+                // Créer le prompt
+                const prompt = `Tu es un correcteur professionnel.
+Tu dois relire attentivement le document fourni en pièce jointe et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles, pas sur le style. Ne tiens pas compte des problèmes d'apostrophes, d'exposants ou ceux liés au format du document fourni.
+
+Consignes de formatage strictes :
+Ta réponse doit être un tableau JSON valide contenant une liste d'objets.
+N'écris aucune phrase d'introduction ou de conclusion (pas de "Voici les corrections", pas de markdown \`\`\`json, juste le code brut).
+Respecte scrupuleusement cette structure pour chaque erreur :
+[
+  {
+    "id": 1,
+    "localisation": "Indique la Page N° ou la Section",
+    "passage_errone": "Recopie le passage. Mets la faute ou coquille entre astérisques (ex: le *chatte* noir)",
+    "probleme": "Explique simplement l'erreur (ex: accord incorrect)",
+    "solution": "Le passage entièrement corrigé"
+  }
+]`;
+
+                // Générer le contenu avec le fichier
+                const result = await model.generateContent([
+                    {
+                        fileData: {
+                            mimeType: uploadResult.file.mimeType,
+                            fileUri: uploadResult.file.uri
+                        }
+                    },
+                    { text: prompt }
+                ]);
+
+                const response = await result.response;
+                let responseText = response.text();
+
+                // Nettoyer la réponse si elle contient des balises markdown
+                responseText = responseText.trim();
+                if (responseText.startsWith('```json')) {
+                    responseText = responseText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                } else if (responseText.startsWith('```')) {
+                    responseText = responseText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                }
+
+                // Parser le JSON
+                try {
+                    allErrors = JSON.parse(responseText);
+
+                    if (!Array.isArray(allErrors)) {
+                        throw new Error('La réponse n\'est pas un tableau');
+                    }
+
+                    // Afficher les résultats
+                    displayErrors(allErrors);
+
+                    // Feedback de succès
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'success';
+                    successMsg.textContent = `✓ Analyse terminée ! ${allErrors.length} erreur${allErrors.length > 1 ? 's' : ''} détectée${allErrors.length > 1 ? 's' : ''}.`;
+                    document.querySelector('.upload-section').appendChild(successMsg);
+                    setTimeout(() => successMsg.remove(), 4000);
+
+                } catch (parseError) {
+                    console.error('Erreur de parsing JSON:', parseError);
+                    console.log('Réponse reçue:', responseText);
+                    throw new Error('Le format de la réponse est invalide. Veuillez réessayer.');
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+
+                let errorMessage = 'Erreur lors de l\'analyse du document :\n\n';
+
+                if (error.message && error.message.includes('API key')) {
+                    errorMessage += 'Clé API invalide. Veuillez vérifier votre clé.\n\nVoulez-vous entrer une nouvelle clé ?';
+                    if (confirm(errorMessage)) {
+                        localStorage.removeItem('gemini-api-key');
+                        window.correctDocument(); // Réessayer
+                        return;
+                    }
+                } else if (error.message && error.message.includes('quota')) {
+                    errorMessage += 'Quota dépassé. Veuillez réessayer plus tard ou vérifier votre compte sur Google AI Studio.';
+                    alert(errorMessage);
+                } else {
+                    errorMessage += error.message || 'Erreur inconnue';
+                    alert(errorMessage);
+                }
+
+                errorsList.innerHTML = `
+                    <div class="error">
+                        <strong>Erreur :</strong><br>
+                        ${escapeHtml(error.message || 'Une erreur est survenue')}
+                    </div>
+                `;
+            } finally {
+                // Restaurer le bouton
+                correctBtn.disabled = false;
+                correctBtn.textContent = originalText;
+            }
+        };
+
+        function displayErrors(errors) {
+            const errorsList = document.getElementById('errorsList');
+            const totalErrors = document.getElementById('totalErrors');
+
+            totalErrors.textContent = errors.length;
+
+            if (errors.length === 0) {
+                errorsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✨</div>
+                        <div>Aucune erreur détectée !</div>
+                        <div style="font-size: 0.9em; color: #999; margin-top: 10px;">Votre document semble impeccable.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            errorsList.innerHTML = errors.map((error, index) => {
+                const highlightedPassage = error.passage_errone.replace(/\*([^*]+)\*/g, '<span class="highlighted-error">$1</span>');
+
+                return `
+                    <div class="error-card" data-index="${index}" data-problem="${escapeHtml(error.probleme.toLowerCase())}">
+                        <div class="error-header" onclick="toggleError(${index})">
+                            <div class="error-header-left">
+                                <div class="error-id">#${error.id || index + 1}</div>
+                                <div class="error-location">${escapeHtml(error.localisation)}</div>
+                                <span class="error-type">${escapeHtml(error.probleme)}</span>
+                            </div>
+                            <div class="error-toggle">▼</div>
+                        </div>
+                        <div class="error-body">
+                            <div class="error-section">
+                                <div class="error-section-title">Passage erroné</div>
+                                <div class="error-section-content erroneous">${highlightedPassage}</div>
+                            </div>
+                            <div class="error-section">
+                                <div class="error-section-title">Problème</div>
+                                <div class="error-section-content">${escapeHtml(error.probleme)}</div>
+                            </div>
+                            <div class="error-section">
+                                <div class="error-section-title">Solution</div>
+                                <div class="error-section-content solution">${escapeHtml(error.solution)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            filterErrors();
+        }
+
+        window.toggleError = function(index) {
+            const card = document.querySelector(`.error-card[data-index="${index}"]`);
+            card.classList.toggle('expanded');
+        };
+
+        window.setFilter = function(filter) {
+            currentFilter = filter;
+
+            // Mettre à jour les boutons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
+
+            filterErrors();
+        };
+
+        window.filterErrors = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const visibleErrorsStat = document.getElementById('visibleErrorsStat');
+            const visibleErrors = document.getElementById('visibleErrors');
+            let visibleCount = 0;
+
+            document.querySelectorAll('.error-card').forEach(card => {
+                const problem = card.dataset.problem;
+                const text = card.textContent.toLowerCase();
+
+                const matchesFilter = currentFilter === 'all' || problem.includes(currentFilter);
+                const matchesSearch = searchTerm === '' || text.includes(searchTerm);
+
+                if (matchesFilter && matchesSearch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Afficher le compteur d'erreurs visibles si filtré
+            if (currentFilter !== 'all' || searchTerm !== '') {
+                visibleErrorsStat.style.display = 'block';
+                visibleErrors.textContent = visibleCount;
+            } else {
+                visibleErrorsStat.style.display = 'none';
+            }
+        };
+
+        window.exportJSON = async function() {
+            if (allErrors.length === 0) {
+                alert('Aucune erreur à exporter');
+                return;
+            }
+
+            const json = JSON.stringify(allErrors, null, 2);
+
+            try {
+                await navigator.clipboard.writeText(json);
+
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copié !';
+                btn.style.backgroundColor = '#4caf50';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            } catch (error) {
+                alert('Erreur lors de la copie. Voici le JSON :\n\n' + json);
+            }
+        };
+
+        window.exportCSV = function() {
+            if (allErrors.length === 0) {
+                alert('Aucune erreur à exporter');
+                return;
+            }
+
+            // Créer le CSV
+            const headers = ['ID', 'Localisation', 'Passage erroné', 'Problème', 'Solution'];
+            const rows = allErrors.map(error => [
+                error.id || '',
+                error.localisation || '',
+                error.passage_errone || '',
+                error.probleme || '',
+                error.solution || ''
+            ]);
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+            ].join('\n');
+
+            // Télécharger le fichier
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `corrections_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        window.resetForm = function() {
+            selectedFile = null;
+            allErrors = [];
+            currentFilter = 'all';
+
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileLabel').classList.remove('has-file');
+            document.getElementById('fileInfo').innerHTML = '';
+            document.getElementById('correctBtn').disabled = true;
+            document.getElementById('resultsSection').classList.remove('visible');
+            document.getElementById('searchInput').value = '';
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+        };
+
+        window.deleteGeminiKey = function() {
+            const currentKey = localStorage.getItem('gemini-api-key');
+
+            if (!currentKey) {
+                alert('Aucune clé API Gemini enregistrée.');
+                return;
+            }
+
+            if (confirm('Voulez-vous vraiment supprimer la clé API Gemini enregistrée ?\n\nVous devrez la saisir à nouveau lors de la prochaine analyse.')) {
+                localStorage.removeItem('gemini-api-key');
+                alert('✓ Clé API supprimée avec succès');
+                updateKeyManagementVisibility();
+            }
+        };
+
+        function updateKeyManagementVisibility() {
+            const hasKey = localStorage.getItem('gemini-api-key') !== null;
+            const keyManagement = document.getElementById('keyManagement');
+            if (keyManagement) {
+                keyManagement.style.display = hasKey ? 'block' : 'none';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Mettre à jour la visibilité au chargement
+        document.addEventListener('DOMContentLoaded', updateKeyManagementVisibility);
+    </script>
+</body>
+</html>
