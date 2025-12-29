@@ -699,7 +699,10 @@
                 const model = genAI.getGenerativeModel({
                     model: "gemini-3-flash-preview",
                     generationConfig: {
-                        thinking_level: "high"
+                        temperature: 0.3,
+                        thinkingConfig: {
+                            thinkingLevel: "HIGH"
+                        }
                     }
                 });
 
