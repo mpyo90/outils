@@ -580,7 +580,7 @@
     function makePrompt(kind /* "pdf" | "docx" */) {
       if (kind === "docx") {
         return `Tu es un correcteur professionnel.
-Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (y compris les noms et références le cas échéant), pas sur le style.
+Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (y compris les noms propres le cas échéant) mais PAS sur le style ou le fond.
 
 Le document est fourni sous forme de blocs repérés par des identifiants (ex: P12, H2-3, LI7).
 IMPORTANT : dans "localisation", tu dois mettre l'identifiant du bloc concerné sous une forme explicite (ex: "Paragraphe 12") — rien d'autre.
@@ -607,7 +607,7 @@ Ne mets rien d'autre dans "localisation".`;
       }
 
       return `Tu es un correcteur professionnel.
-Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (y compris les noms et références le cas échéant), pas sur le style.
+Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (y compris les noms propres le cas échéant) mais PAS sur le style ou le fond.
 
 Consignes de formatage strictes :
 Ta réponse doit être un tableau JSON valide contenant une liste d'objets.
