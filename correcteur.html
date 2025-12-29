@@ -479,7 +479,7 @@
                 <div id="fileInfo" class="file-info"></div>
             </div>
 
-            <button id="correctBtn" onclick="correctDocument()" disabled>Analyser le document</button>
+            <button id="correctBtn" disabled>Analyser le document</button>
 
             <p class="info-text">
                 L'analyse utilise l'API Gemini Flash Preview pour détecter les fautes d'orthographe, de grammaire, de syntaxe et de ponctuation.
@@ -536,9 +536,9 @@
     </div>
 
     <script>
-        let selectedFile = null;
-        let allErrors = [];
-        let currentFilter = 'all';
+        window.selectedFile = null;
+        window.allErrors = [];
+        window.currentFilter = 'all';
 
         function handleFileSelect(event) {
             selectedFile = event.target.files[0];
@@ -781,9 +781,9 @@
     <script type="module">
         import { GoogleGenerativeAI, GoogleAIFileManager } from "https://esm.run/@google/generative-ai";
 
-        // Exposer la fonction correctDocument globalement
-        window.correctDocument = async function() {
-            if (!selectedFile) {
+        // Fonction pour analyser le document
+        async function correctDocument() {
+            if (!window.selectedFile) {
                 alert('Veuillez sélectionner un fichier');
                 return;
             }
@@ -821,7 +821,7 @@
                 const fileManager = new GoogleAIFileManager(apiKey);
 
                 // Upload du fichier
-                const uploadResult = await fileManager.uploadFile(selectedFile.name, selectedFile);
+                const uploadResult = await fileManager.uploadFile(window.selectedFile.name, window.selectedFile);
 
                 // Initialiser Gemini
                 const genAI = new GoogleGenerativeAI(apiKey);
@@ -878,19 +878,19 @@ Respecte scrupuleusement cette structure pour chaque erreur :
 
                 // Parser le JSON
                 try {
-                    allErrors = JSON.parse(responseText);
+                    window.allErrors = JSON.parse(responseText);
 
-                    if (!Array.isArray(allErrors)) {
+                    if (!Array.isArray(window.allErrors)) {
                         throw new Error('La réponse n\'est pas un tableau');
                     }
 
                     // Afficher les résultats
-                    displayErrors(allErrors);
+                    displayErrors(window.allErrors);
 
                     // Feedback de succès
                     const successMsg = document.createElement('div');
                     successMsg.className = 'success';
-                    successMsg.textContent = `✓ Analyse terminée ! ${allErrors.length} erreur${allErrors.length > 1 ? 's' : ''} détectée${allErrors.length > 1 ? 's' : ''}.`;
+                    successMsg.textContent = `✓ Analyse terminée ! ${window.allErrors.length} erreur${window.allErrors.length > 1 ? 's' : ''} détectée${window.allErrors.length > 1 ? 's' : ''}.`;
                     document.querySelector('.upload-section').appendChild(successMsg);
                     setTimeout(() => successMsg.remove(), 4000);
 
@@ -909,7 +909,7 @@ Respecte scrupuleusement cette structure pour chaque erreur :
                     errorMessage += 'Clé API invalide. Veuillez vérifier votre clé.\n\nVoulez-vous entrer une nouvelle clé ?';
                     if (confirm(errorMessage)) {
                         localStorage.removeItem('gemini-api-key');
-                        window.correctDocument(); // Réessayer
+                        correctDocument(); // Réessayer
                         return;
                     }
                 } else if (error.message && error.message.includes('quota')) {
@@ -931,7 +931,10 @@ Respecte scrupuleusement cette structure pour chaque erreur :
                 correctBtn.disabled = false;
                 correctBtn.textContent = originalText;
             }
-        };
+        }
+
+        // Attacher l'event listener au bouton
+        document.getElementById('correctBtn').addEventListener('click', correctDocument);
     </script>
 </body>
 </html>
