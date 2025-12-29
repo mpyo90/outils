@@ -529,12 +529,12 @@
                 <h3>Filtrer par :</h3>
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="bureau">Bureau (26)</button>
-                    <button class="filter-btn" data-filter="cdp">CDP (9)</button>
-                    <button class="filter-btn" data-filter="pres-groupe">Prés. de groupe (8)</button>
-                    <button class="filter-btn" data-filter="pres-commission">Prés. de com. (7)</button>
-                    <button class="filter-btn" data-filter="pres-delegation">Prés. de dél. (5)</button>
+                    <button class="filter-btn active" data-filter="cdp">CDP (9)</button>
+                    <button class="filter-btn active" data-filter="pres-groupe">Prés. de groupe (8)</button>
+                    <button class="filter-btn active" data-filter="pres-commission">Prés. de com. (7)</button>
+                    <button class="filter-btn active" data-filter="pres-delegation">Prés. de dél. (5)</button>
                 </div>
-                <p class="filter-count" id="filterCount">26 sénateurs sélectionnés</p>
+                <p class="filter-count" id="filterCount">55 sénateurs sélectionnés</p>
             </div>
 
             <button class="mode-btn" data-mode="flashcard">
@@ -727,7 +727,7 @@
         const AUTO_NEXT_DELAY = 1200;
 
         // État de l'application
-        let activeFilters = new Set(['bureau']);
+        let activeFilters = new Set(['bureau', 'cdp', 'pres-groupe', 'pres-commission', 'pres-delegation']);
         let currentMode = '';
         let filteredMembers = [];
         let shuffledMembers = [];
