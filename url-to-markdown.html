@@ -113,6 +113,10 @@
             background-color: #d0d0d0;
         }
 
+        #cleanBtn:hover:not(:disabled) {
+            background-color: #8a4ab3 !important;
+        }
+
         .info-text {
             font-size: 0.85em;
             color: #666;
@@ -405,8 +409,15 @@
                 <div class="result-stats" id="stats"></div>
                 <div class="result-actions">
                     <button onclick="copyMarkdown()" id="copyBtn">📋 Copier le markdown</button>
+                    <button onclick="cleanWithGemini()" id="cleanBtn" style="background-color: #9c5ccc;">🧹 Nettoyer avec Gemini</button>
                     <button class="secondary" onclick="resetForm()">🔄 Nouvelle conversion</button>
                 </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 10px;">
+                <a href="#" onclick="manageGeminiKey(); return false;" style="font-size: 0.85em; color: #666; text-decoration: none;">
+                    ⚙️ Gérer la clé API Gemini
+                </a>
             </div>
 
             <div class="tabs">
@@ -421,7 +432,8 @@
             <div id="codeTab" class="tab-content">
                 <textarea id="markdownCode" placeholder="Le markdown apparaîtra ici après la conversion..."></textarea>
                 <p style="margin-top: 10px; font-size: 0.85em; color: #666; font-style: italic;">
-                    💡 Vous pouvez éditer le markdown directement. La prévisualisation se met à jour automatiquement.
+                    💡 Vous pouvez éditer le markdown directement. La prévisualisation se met à jour automatiquement.<br>
+                    🧹 Utilisez le bouton "Nettoyer avec Gemini" pour supprimer automatiquement les menus, images et éléments de navigation.
                 </p>
             </div>
         </div>
@@ -618,6 +630,163 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        // Fonction pour gérer la clé API Gemini
+        function manageGeminiKey() {
+            const currentKey = localStorage.getItem('gemini-api-key');
+            const message = currentKey
+                ? 'Clé API Gemini actuelle (masquée) : ' + currentKey.substring(0, 8) + '...\n\nOptions :\n1. Cliquez sur OK pour entrer une nouvelle clé\n2. Cliquez sur Annuler pour supprimer la clé'
+                : 'Aucune clé API Gemini enregistrée.\n\nVous pouvez obtenir une clé gratuite sur :\nhttps://aistudio.google.com/app/apikey';
+
+            const action = confirm(message);
+
+            if (action) {
+                // Entrer une nouvelle clé
+                const newKey = prompt('Entrez votre clé API Google Gemini :\n\n(Elle sera stockée localement dans votre navigateur)');
+                if (newKey && newKey.trim()) {
+                    localStorage.setItem('gemini-api-key', newKey.trim());
+                    alert('✓ Clé API enregistrée avec succès !');
+                }
+            } else if (currentKey) {
+                // Supprimer la clé
+                if (confirm('Voulez-vous vraiment supprimer la clé API enregistrée ?')) {
+                    localStorage.removeItem('gemini-api-key');
+                    alert('✓ Clé API supprimée');
+                }
+            }
+        }
+    </script>
+
+    <!-- Script module pour Gemini AI -->
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        // Exposer la fonction cleanWithGemini globalement
+        window.cleanWithGemini = async function() {
+            const markdown = document.getElementById('markdownCode').value;
+
+            if (!markdown || markdown.trim() === '') {
+                alert('Aucun markdown à nettoyer. Veuillez d\'abord convertir une URL.');
+                return;
+            }
+
+            // Vérifier/obtenir la clé API
+            let apiKey = localStorage.getItem('gemini-api-key');
+
+            if (!apiKey) {
+                apiKey = prompt('Entrez votre clé API Google Gemini :\n\nVous pouvez obtenir une clé gratuite sur :\nhttps://aistudio.google.com/app/apikey\n\n(Elle sera stockée localement dans votre navigateur)');
+
+                if (!apiKey || apiKey.trim() === '') {
+                    return; // Annulé par l'utilisateur
+                }
+
+                apiKey = apiKey.trim();
+                localStorage.setItem('gemini-api-key', apiKey);
+            }
+
+            const cleanBtn = document.getElementById('cleanBtn');
+            const originalText = cleanBtn.textContent;
+            const originalBg = cleanBtn.style.backgroundColor;
+
+            try {
+                // Désactiver le bouton et afficher le chargement
+                cleanBtn.disabled = true;
+                cleanBtn.textContent = '⏳ Nettoyage en cours...';
+                cleanBtn.style.backgroundColor = '#999';
+
+                // Initialiser Gemini
+                const genAI = new GoogleGenerativeAI(apiKey);
+                const model = genAI.getGenerativeModel({
+                    model: "gemini-3-flash-preview",
+                    generationConfig: {
+                        thinking_level: "high"
+                    }
+                });
+
+                // Créer le prompt de nettoyage
+                const prompt = `Tu es un expert en nettoyage de contenu web converti en markdown pour une utilisation avec des LLM.
+
+Nettoie le markdown ci-dessous en suivant ces règles strictes :
+
+SUPPRIMER ENTIÈREMENT :
+- Tous les menus de navigation (header, footer, sidebar, breadcrumbs)
+- Les bannières cookies, popups et consentements
+- Les sélecteurs de langue et boutons de traduction
+- Les listes de liens de navigation répétitives
+- Les éléments d'interface ("Ouvrir", "Fermer", "Rechercher", etc.)
+- Les boutons de réseaux sociaux isolés
+- Les sections "Nous suivre", "Liens pratiques", "Services", "Contact"
+- TOUTES les images et références visuelles (![...], Image X, etc.)
+- Les logos, icônes et éléments décoratifs
+- Les métadonnées de page non essentielles
+- Les liens vers d'autres pages du site (sauf s'ils sont dans le contenu principal)
+
+CONSERVER :
+- Le titre principal de la page
+- Tous les paragraphes de texte substantiels
+- Les listes avec du contenu informatif réel
+- Les tableaux avec des données
+- Les citations et extraits importants
+- Les dates et informations factuelles
+- La hiérarchie des titres du contenu principal
+
+RÈGLES DE FORMATAGE :
+- Ne rajoute AUCUN commentaire, explication ou note de ta part
+- Retourne UNIQUEMENT le markdown nettoyé, rien d'autre
+- Préserve le formatage markdown original (titres, listes, gras, etc.)
+- Supprime les lignes vides excessives (max 2 sauts de ligne consécutifs)
+
+Markdown à nettoyer :
+
+${markdown}`;
+
+                // Générer le contenu nettoyé
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const cleanedMarkdown = response.text();
+
+                // Mettre à jour le textarea avec le markdown nettoyé
+                document.getElementById('markdownCode').value = cleanedMarkdown;
+
+                // Mettre à jour la prévisualisation
+                window.updatePreview();
+
+                // Feedback de succès
+                cleanBtn.textContent = '✓ Nettoyé !';
+                cleanBtn.style.backgroundColor = '#4caf50';
+
+                setTimeout(() => {
+                    cleanBtn.textContent = originalText;
+                    cleanBtn.style.backgroundColor = originalBg;
+                    cleanBtn.disabled = false;
+                }, 2000);
+
+            } catch (error) {
+                console.error('Erreur Gemini:', error);
+
+                let errorMessage = 'Erreur lors du nettoyage avec Gemini :\n\n';
+
+                if (error.message && error.message.includes('API key')) {
+                    errorMessage += 'Clé API invalide. Veuillez vérifier votre clé.\n\nVoulez-vous entrer une nouvelle clé ?';
+                    if (confirm(errorMessage)) {
+                        localStorage.removeItem('gemini-api-key');
+                        window.cleanWithGemini(); // Réessayer
+                        return;
+                    }
+                } else if (error.message && error.message.includes('quota')) {
+                    errorMessage += 'Quota dépassé. Veuillez réessayer plus tard ou vérifier votre compte sur Google AI Studio.';
+                    alert(errorMessage);
+                } else {
+                    errorMessage += error.message || 'Erreur inconnue';
+                    alert(errorMessage);
+                }
+
+                // Restaurer le bouton
+                cleanBtn.textContent = originalText;
+                cleanBtn.style.backgroundColor = originalBg;
+                cleanBtn.disabled = false;
+            }
+        };
     </script>
 </body>
 </html>
