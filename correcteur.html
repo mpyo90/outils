@@ -70,22 +70,28 @@
       color: #666;
     }
 
-    button {
-      padding: 12px 24px;
-      background-color: #cc785c;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
-      width: 100%;
-    }
+	button {
+	  padding: 12px 24px;
+	  background-color: #cc785c;
+	  color: #ffffff;
+	  border: none;
+	  border-radius: 10px;
+	  font-size: 1em;
+	  font-weight: 650;
+	  cursor: pointer;
+	  transition: background-color 0.2s, transform 0.1s, color 0.2s;
+	  width: 100%;
+	}
 
-    button:hover:not(:disabled) { background-color: #b86a4e; }
-    button:active { transform: scale(0.98); }
-    button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
+	button:hover:not(:disabled) { background-color: #b86a4e; }
+	button:active { transform: scale(0.98); }
+
+	button:disabled {
+	  background-color: #e6e6e6;
+	  color: #5f5f5f;
+	  cursor: not-allowed;
+	  transform: none;
+	}
 
     .info-text {
       font-size: 0.85em;
@@ -122,14 +128,13 @@
       margin-bottom: 16px;
     }
 
-    /* ✅ Nouveau style : "X erreurs trouvées" comme titre élégant, tout orange */
-    .errors-title {
-      font-size: 1.25em;
-      font-weight: 800;
-      color: #cc785c;
-      letter-spacing: 0.2px;
-      line-height: 1.15;
-    }
+	.errors-title {
+	  font-size: 1.15em;
+	  font-weight: 700;
+	  color: #cc785c;
+	  letter-spacing: 0.1px;
+	  line-height: 1.2;
+	}
 
     .empty-state {
       text-align: center;
@@ -187,20 +192,20 @@
       border-bottom: 1px solid #eee;
     }
 
-    /* ✅ Nouveau header sur une ligne : "Erreur n° 1 : Paragraphe 1" */
-    .err-title {
-      font-weight: 800;
-      color: #2d2d2d;
-      line-height: 1.25;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .err-title span {
-      color: #cc785c;
-      font-weight: 900;
-    }
+	.err-title {
+	  font-weight: 650;
+	  color: #4a4a4a;
+	  line-height: 1.25;
+	  min-width: 0;
+	  white-space: nowrap;
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	}
+
+	.err-title .num {
+	  color: #cc785c;      /* petit accent */
+	  font-weight: 650;    /* pas de 900 */
+	}
 
     .err-body { padding: 14px 16px 16px; }
 
@@ -258,12 +263,12 @@
       word-break: break-word;
     }
 
-    .hl {
-      background: #ffeb3b;
-      padding: 1px 4px;
-      border-radius: 4px;
-      font-weight: 700;
-    }
+	.hl {
+	  background: transparent;
+	  padding: 0;
+	  border-radius: 0;
+	  font-weight: 800; /* le gras suffit */
+	}
 
     .problem-line {
       margin-top: 12px;
@@ -322,7 +327,7 @@
       <button id="correctBtn" disabled>Analyser le document</button>
 
       <p class="info-text">
-        La correction est effectuée à l'aide du modèle Gemini avec grounding web (Google Search) activé.
+        La correction est effectuée à l'aide du modèle Gemini 3.0 Flash et peut prendre de quelques secondes à 5 minutes.
       </p>
 
       <div class="key-management" id="keyManagement" style="display: none;">
@@ -371,14 +376,14 @@
       }
     }
 
-    function pluralizeErreur(n) {
-      return n === 1 ? "erreur trouvée" : "erreurs trouvées";
-    }
+	function pluralizeErreur(n) {
+	  return n === 1 ? "erreur trouvée" : "erreurs trouvées";
+	}
 
-    function setErrorsTitle(n) {
-      const t = document.getElementById('errorsTitle');
-      if (t) t.textContent = `${n} ${pluralizeErreur(n)}`;
-    }
+	function setErrorsTitle(n) {
+	  const t = document.getElementById('errorsTitle');
+	  if (t) t.textContent = `Rapport de correction : ${n} ${pluralizeErreur(n)}`;
+	}
 
     function displayErrors(errors) {
       const resultsCard = document.getElementById('resultsCard');
@@ -414,7 +419,8 @@
           <div class="err-card">
             <div class="err-head">
               <div class="err-title" title="${escapeHtml(`Erreur n° ${id} : ${loc}`)}">
-                Erreur n° <span>${escapeHtml(String(id))}</span> : ${escapeHtml(loc)}
+
+                Erreur n° <span class="num">${escapeHtml(String(id))}</span> : ${escapeHtml(loc)}
               </div>
             </div>
 
@@ -522,9 +528,7 @@
       const errorsContainer = document.getElementById("errorsContainer");
       const anotherBlock = document.getElementById("anotherBlock");
 
-      // titre en orange : 0 erreurs trouvées
       window.displayErrors?.([]); // affiche le titre "0 erreurs trouvées" et remplace si besoin
-      // puis on écrase le container par l'erreur
       const detail = formatAnyError(err);
       const hint = extraHint
         ? `<div style="margin-top:10px;color:#666;font-size:0.9em;white-space:normal;">${extraHint}</div>`
@@ -552,12 +556,8 @@
       return await Promise.race([reqPromise, timeoutPromise]);
     }
 
-    // ✅ Grounding web : tools: [{ googleSearch: {} }]
-    // ✅ Timeout : 300000ms (5 minutes)
     function buildModel(genAI, { thinkingLevel, mediaResolution }) {
       return genAI.getGenerativeModel({
-        // ⚠️ Remarque : le grounding Google Search peut ne pas être supporté sur certains modèles "preview".
-        // Mets ici un modèle compatible avec grounding si nécessaire.
         model: "gemini-3-flash-preview",
 
         generationConfig: {
@@ -580,7 +580,7 @@
     function makePrompt(kind /* "pdf" | "docx" */) {
       if (kind === "docx") {
         return `Tu es un correcteur professionnel.
-Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles, pas sur le style.
+Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (y compris les noms et références le cas échéant), pas sur le style.
 
 Le document est fourni sous forme de blocs repérés par des identifiants (ex: P12, H2-3, LI7).
 IMPORTANT : dans "localisation", tu dois mettre l'identifiant du bloc concerné sous une forme explicite (ex: "Paragraphe 12") — rien d'autre.
@@ -607,7 +607,7 @@ Ne mets rien d'autre dans "localisation".`;
       }
 
       return `Tu es un correcteur professionnel.
-Tu dois relire attentivement le document PDF fourni en pièce jointe et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles, pas sur le style.
+Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (y compris les noms et références le cas échéant), pas sur le style.
 
 Consignes de formatage strictes :
 Ta réponse doit être un tableau JSON valide contenant une liste d'objets.
@@ -715,7 +715,6 @@ Respecte scrupuleusement cette structure pour chaque erreur :
         correctBtn.innerHTML = '<span class="loading">Analyse en cours</span>';
 
         resultsCard.classList.add("visible");
-        // titre "… erreurs trouvées"
         const title = document.getElementById("errorsTitle");
         if (title) title.textContent = "Analyse en cours…";
 
@@ -753,7 +752,6 @@ Respecte scrupuleusement cette structure pour chaque erreur :
           ];
         }
 
-        // ✅ Plus de fallback : si > 5 min => timeout, point.
         const result = await generateWithTimeout(model, parts, CLIENT_TIMEOUT_MS);
 
         let responseText = (await result.response).text().trim();
