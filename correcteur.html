@@ -29,12 +29,14 @@
             color: #2d2d2d;
             margin-bottom: 10px;
             font-size: 2em;
+            text-align: center;
         }
 
         .subtitle {
             color: #666;
             margin-bottom: 30px;
             font-size: 0.95em;
+            text-align: center;
         }
 
         .upload-section {
@@ -533,14 +535,12 @@
         </div>
     </div>
 
-    <script type="module">
-        import { GoogleGenerativeAI, GoogleAIFileManager } from "https://esm.run/@google/generative-ai";
-
+    <script>
         let selectedFile = null;
         let allErrors = [];
         let currentFilter = 'all';
 
-        window.handleFileSelect = function(event) {
+        function handleFileSelect(event) {
             selectedFile = event.target.files[0];
             const fileLabel = document.getElementById('fileLabel');
             const fileInfo = document.getElementById('fileInfo');
@@ -558,8 +558,230 @@
                 fileInfo.innerHTML = '';
                 correctBtn.disabled = true;
             }
-        };
+        }
 
+        function displayErrors(errors) {
+            const errorsList = document.getElementById('errorsList');
+            const totalErrors = document.getElementById('totalErrors');
+
+            totalErrors.textContent = errors.length;
+
+            if (errors.length === 0) {
+                errorsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✨</div>
+                        <div>Aucune erreur détectée !</div>
+                        <div style="font-size: 0.9em; color: #999; margin-top: 10px;">Votre document semble impeccable.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            errorsList.innerHTML = errors.map((error, index) => {
+                const highlightedPassage = error.passage_errone.replace(/\*([^*]+)\*/g, '<span class="highlighted-error">$1</span>');
+
+                return `
+                    <div class="error-card" data-index="${index}" data-problem="${escapeHtml(error.probleme.toLowerCase())}">
+                        <div class="error-header" onclick="toggleError(${index})">
+                            <div class="error-header-left">
+                                <div class="error-id">#${error.id || index + 1}</div>
+                                <div class="error-location">${escapeHtml(error.localisation)}</div>
+                                <span class="error-type">${escapeHtml(error.probleme)}</span>
+                            </div>
+                            <div class="error-toggle">▼</div>
+                        </div>
+                        <div class="error-body">
+                            <div class="error-section">
+                                <div class="error-section-title">Passage erroné</div>
+                                <div class="error-section-content erroneous">${highlightedPassage}</div>
+                            </div>
+                            <div class="error-section">
+                                <div class="error-section-title">Problème</div>
+                                <div class="error-section-content">${escapeHtml(error.probleme)}</div>
+                            </div>
+                            <div class="error-section">
+                                <div class="error-section-title">Solution</div>
+                                <div class="error-section-content solution">${escapeHtml(error.solution)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            filterErrors();
+        }
+
+        function toggleError(index) {
+            const card = document.querySelector(`.error-card[data-index="${index}"]`);
+            card.classList.toggle('expanded');
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+
+            // Mettre à jour les boutons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
+
+            filterErrors();
+        }
+
+        function filterErrors() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const visibleErrorsStat = document.getElementById('visibleErrorsStat');
+            const visibleErrors = document.getElementById('visibleErrors');
+            let visibleCount = 0;
+
+            document.querySelectorAll('.error-card').forEach(card => {
+                const problem = card.dataset.problem;
+                const text = card.textContent.toLowerCase();
+
+                const matchesFilter = currentFilter === 'all' || problem.includes(currentFilter);
+                const matchesSearch = searchTerm === '' || text.includes(searchTerm);
+
+                if (matchesFilter && matchesSearch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Afficher le compteur d'erreurs visibles si filtré
+            if (currentFilter !== 'all' || searchTerm !== '') {
+                visibleErrorsStat.style.display = 'block';
+                visibleErrors.textContent = visibleCount;
+            } else {
+                visibleErrorsStat.style.display = 'none';
+            }
+        }
+
+        async function exportJSON() {
+            if (allErrors.length === 0) {
+                alert('Aucune erreur à exporter');
+                return;
+            }
+
+            const json = JSON.stringify(allErrors, null, 2);
+
+            try {
+                await navigator.clipboard.writeText(json);
+
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copié !';
+                btn.style.backgroundColor = '#4caf50';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            } catch (error) {
+                alert('Erreur lors de la copie. Voici le JSON :\n\n' + json);
+            }
+        }
+
+        function exportCSV() {
+            if (allErrors.length === 0) {
+                alert('Aucune erreur à exporter');
+                return;
+            }
+
+            // Créer le CSV
+            const headers = ['ID', 'Localisation', 'Passage erroné', 'Problème', 'Solution'];
+            const rows = allErrors.map(error => [
+                error.id || '',
+                error.localisation || '',
+                error.passage_errone || '',
+                error.probleme || '',
+                error.solution || ''
+            ]);
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+            ].join('\n');
+
+            // Télécharger le fichier
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `corrections_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function resetForm() {
+            selectedFile = null;
+            allErrors = [];
+            currentFilter = 'all';
+
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileLabel').classList.remove('has-file');
+            document.getElementById('fileInfo').innerHTML = '';
+            document.getElementById('correctBtn').disabled = true;
+            document.getElementById('resultsSection').classList.remove('visible');
+            document.getElementById('searchInput').value = '';
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+        }
+
+        function deleteGeminiKey() {
+            const currentKey = localStorage.getItem('gemini-api-key');
+
+            if (!currentKey) {
+                alert('Aucune clé API Gemini enregistrée.');
+                return;
+            }
+
+            if (confirm('Voulez-vous vraiment supprimer la clé API Gemini enregistrée ?\n\nVous devrez la saisir à nouveau lors de la prochaine analyse.')) {
+                localStorage.removeItem('gemini-api-key');
+                alert('✓ Clé API supprimée avec succès');
+                updateKeyManagementVisibility();
+            }
+        }
+
+        function updateKeyManagementVisibility() {
+            const hasKey = localStorage.getItem('gemini-api-key') !== null;
+            const keyManagement = document.getElementById('keyManagement');
+            if (keyManagement) {
+                keyManagement.style.display = hasKey ? 'block' : 'none';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Mettre à jour la visibilité au chargement
+        document.addEventListener('DOMContentLoaded', updateKeyManagementVisibility);
+    </script>
+
+    <!-- Script module pour Gemini AI -->
+    <script type="module">
+        import { GoogleGenerativeAI, GoogleAIFileManager } from "https://esm.run/@google/generative-ai";
+
+        // Exposer la fonction correctDocument globalement
         window.correctDocument = async function() {
             if (!selectedFile) {
                 alert('Veuillez sélectionner un fichier');
@@ -710,222 +932,6 @@ Respecte scrupuleusement cette structure pour chaque erreur :
                 correctBtn.textContent = originalText;
             }
         };
-
-        function displayErrors(errors) {
-            const errorsList = document.getElementById('errorsList');
-            const totalErrors = document.getElementById('totalErrors');
-
-            totalErrors.textContent = errors.length;
-
-            if (errors.length === 0) {
-                errorsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">✨</div>
-                        <div>Aucune erreur détectée !</div>
-                        <div style="font-size: 0.9em; color: #999; margin-top: 10px;">Votre document semble impeccable.</div>
-                    </div>
-                `;
-                return;
-            }
-
-            errorsList.innerHTML = errors.map((error, index) => {
-                const highlightedPassage = error.passage_errone.replace(/\*([^*]+)\*/g, '<span class="highlighted-error">$1</span>');
-
-                return `
-                    <div class="error-card" data-index="${index}" data-problem="${escapeHtml(error.probleme.toLowerCase())}">
-                        <div class="error-header" onclick="toggleError(${index})">
-                            <div class="error-header-left">
-                                <div class="error-id">#${error.id || index + 1}</div>
-                                <div class="error-location">${escapeHtml(error.localisation)}</div>
-                                <span class="error-type">${escapeHtml(error.probleme)}</span>
-                            </div>
-                            <div class="error-toggle">▼</div>
-                        </div>
-                        <div class="error-body">
-                            <div class="error-section">
-                                <div class="error-section-title">Passage erroné</div>
-                                <div class="error-section-content erroneous">${highlightedPassage}</div>
-                            </div>
-                            <div class="error-section">
-                                <div class="error-section-title">Problème</div>
-                                <div class="error-section-content">${escapeHtml(error.probleme)}</div>
-                            </div>
-                            <div class="error-section">
-                                <div class="error-section-title">Solution</div>
-                                <div class="error-section-content solution">${escapeHtml(error.solution)}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            filterErrors();
-        }
-
-        window.toggleError = function(index) {
-            const card = document.querySelector(`.error-card[data-index="${index}"]`);
-            card.classList.toggle('expanded');
-        };
-
-        window.setFilter = function(filter) {
-            currentFilter = filter;
-
-            // Mettre à jour les boutons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
-
-            filterErrors();
-        };
-
-        window.filterErrors = function() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const visibleErrorsStat = document.getElementById('visibleErrorsStat');
-            const visibleErrors = document.getElementById('visibleErrors');
-            let visibleCount = 0;
-
-            document.querySelectorAll('.error-card').forEach(card => {
-                const problem = card.dataset.problem;
-                const text = card.textContent.toLowerCase();
-
-                const matchesFilter = currentFilter === 'all' || problem.includes(currentFilter);
-                const matchesSearch = searchTerm === '' || text.includes(searchTerm);
-
-                if (matchesFilter && matchesSearch) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Afficher le compteur d'erreurs visibles si filtré
-            if (currentFilter !== 'all' || searchTerm !== '') {
-                visibleErrorsStat.style.display = 'block';
-                visibleErrors.textContent = visibleCount;
-            } else {
-                visibleErrorsStat.style.display = 'none';
-            }
-        };
-
-        window.exportJSON = async function() {
-            if (allErrors.length === 0) {
-                alert('Aucune erreur à exporter');
-                return;
-            }
-
-            const json = JSON.stringify(allErrors, null, 2);
-
-            try {
-                await navigator.clipboard.writeText(json);
-
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '✓ Copié !';
-                btn.style.backgroundColor = '#4caf50';
-
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.backgroundColor = '';
-                }, 2000);
-            } catch (error) {
-                alert('Erreur lors de la copie. Voici le JSON :\n\n' + json);
-            }
-        };
-
-        window.exportCSV = function() {
-            if (allErrors.length === 0) {
-                alert('Aucune erreur à exporter');
-                return;
-            }
-
-            // Créer le CSV
-            const headers = ['ID', 'Localisation', 'Passage erroné', 'Problème', 'Solution'];
-            const rows = allErrors.map(error => [
-                error.id || '',
-                error.localisation || '',
-                error.passage_errone || '',
-                error.probleme || '',
-                error.solution || ''
-            ]);
-
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-            ].join('\n');
-
-            // Télécharger le fichier
-            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-
-            link.setAttribute('href', url);
-            link.setAttribute('download', `corrections_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.display = 'none';
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        };
-
-        window.resetForm = function() {
-            selectedFile = null;
-            allErrors = [];
-            currentFilter = 'all';
-
-            document.getElementById('fileInput').value = '';
-            document.getElementById('fileLabel').classList.remove('has-file');
-            document.getElementById('fileInfo').innerHTML = '';
-            document.getElementById('correctBtn').disabled = true;
-            document.getElementById('resultsSection').classList.remove('visible');
-            document.getElementById('searchInput').value = '';
-
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
-        };
-
-        window.deleteGeminiKey = function() {
-            const currentKey = localStorage.getItem('gemini-api-key');
-
-            if (!currentKey) {
-                alert('Aucune clé API Gemini enregistrée.');
-                return;
-            }
-
-            if (confirm('Voulez-vous vraiment supprimer la clé API Gemini enregistrée ?\n\nVous devrez la saisir à nouveau lors de la prochaine analyse.')) {
-                localStorage.removeItem('gemini-api-key');
-                alert('✓ Clé API supprimée avec succès');
-                updateKeyManagementVisibility();
-            }
-        };
-
-        function updateKeyManagementVisibility() {
-            const hasKey = localStorage.getItem('gemini-api-key') !== null;
-            const keyManagement = document.getElementById('keyManagement');
-            if (keyManagement) {
-                keyManagement.style.display = hasKey ? 'block' : 'none';
-            }
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Mettre à jour la visibilité au chargement
-        document.addEventListener('DOMContentLoaded', updateKeyManagementVisibility);
     </script>
 </body>
 </html>
