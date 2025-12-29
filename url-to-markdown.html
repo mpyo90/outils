@@ -419,7 +419,10 @@
             </div>
 
             <div id="codeTab" class="tab-content">
-                <textarea id="markdownCode" readonly></textarea>
+                <textarea id="markdownCode" placeholder="Le markdown apparaîtra ici après la conversion..."></textarea>
+                <p style="margin-top: 10px; font-size: 0.85em; color: #666; font-style: italic;">
+                    💡 Vous pouvez éditer le markdown directement. La prévisualisation se met à jour automatiquement.
+                </p>
             </div>
         </div>
 
@@ -489,18 +492,12 @@
                 }
 
                 const markdown = await response.text();
-                currentMarkdown = markdown;
-
-                // Afficher les statistiques
-                displayStats(markdown);
-
-                // Rendre le markdown avec marked.js et le sanitizer avec DOMPurify
-                const rawHtml = marked.parse(markdown);
-                const cleanHtml = DOMPurify.sanitize(rawHtml);
-                preview.innerHTML = cleanHtml;
 
                 // Remplir le textarea avec le markdown brut
                 document.getElementById('markdownCode').value = markdown;
+
+                // Mettre à jour la prévisualisation
+                updatePreview();
 
                 // Message de succès
                 const successMsg = document.createElement('div');
@@ -540,13 +537,16 @@
         }
 
         async function copyMarkdown() {
-            if (!currentMarkdown) {
+            // Toujours copier le contenu actuel du textarea (possiblement édité)
+            const markdown = document.getElementById('markdownCode').value;
+
+            if (!markdown) {
                 alert('Aucun markdown à copier');
                 return;
             }
 
             try {
-                await navigator.clipboard.writeText(currentMarkdown);
+                await navigator.clipboard.writeText(markdown);
 
                 const copyBtn = document.getElementById('copyBtn');
                 const originalText = copyBtn.textContent;
@@ -572,6 +572,8 @@
             });
 
             if (tabName === 'preview') {
+                // Mettre à jour la prévisualisation avec le markdown actuel (possiblement édité)
+                updatePreview();
                 document.querySelector('.tab:first-child').classList.add('active');
                 document.getElementById('previewTab').classList.add('active');
             } else {
@@ -580,8 +582,30 @@
             }
         }
 
+        function updatePreview() {
+            const markdown = document.getElementById('markdownCode').value;
+            const preview = document.getElementById('preview');
+
+            if (!markdown) {
+                preview.innerHTML = '<p style="color: #666; font-style: italic;">Aucun contenu à prévisualiser</p>';
+                return;
+            }
+
+            // Synchroniser currentMarkdown avec le contenu du textarea
+            currentMarkdown = markdown;
+
+            // Mettre à jour les statistiques
+            displayStats(markdown);
+
+            // Rendre le markdown avec marked.js et le sanitizer avec DOMPurify
+            const rawHtml = marked.parse(markdown);
+            const cleanHtml = DOMPurify.sanitize(rawHtml);
+            preview.innerHTML = cleanHtml;
+        }
+
         function resetForm() {
-            document.getElementById('urlInput').value = '';
+            document.getElementById('urlInput').value = 'https://www.';
+            document.getElementById('markdownCode').value = '';
             document.getElementById('resultSection').classList.remove('visible');
             currentMarkdown = '';
 
