@@ -115,27 +115,20 @@
 
     .results-top {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 16px;
     }
 
-    .count-pill {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 8px;
-      padding: 10px 14px;
-      background: #f5f5f0;
-      border-radius: 12px;
-      font-size: 0.95em;
-    }
-
-    .count-pill strong {
+    /* ✅ Nouveau style : "X erreurs trouvées" comme titre élégant, tout orange */
+    .errors-title {
+      font-size: 1.25em;
+      font-weight: 800;
       color: #cc785c;
-      font-size: 1.5em;
-      line-height: 1;
+      letter-spacing: 0.2px;
+      line-height: 1.15;
     }
 
     .empty-state {
@@ -186,7 +179,7 @@
 
     .err-head {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
       padding: 14px 16px;
@@ -194,31 +187,22 @@
       border-bottom: 1px solid #eee;
     }
 
-    .err-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .err-id {
-      font-size: 0.85em;
-      color: #999;
-    }
-
-    .err-loc {
-      font-weight: 650;
+    /* ✅ Nouveau header sur une ligne : "Erreur n° 1 : Paragraphe 1" */
+    .err-title {
+      font-weight: 800;
       color: #2d2d2d;
       line-height: 1.25;
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 100%;
+    }
+    .err-title span {
+      color: #cc785c;
+      font-weight: 900;
     }
 
-    .err-body {
-      padding: 14px 16px 16px;
-    }
+    .err-body { padding: 14px 16px 16px; }
 
     .err-grid {
       display: grid;
@@ -307,14 +291,14 @@
 
     @media (max-width: 860px) {
       .err-grid { grid-template-columns: 1fr; }
-      .err-loc { white-space: normal; }
+      .err-title { white-space: normal; }
     }
 
     @media (max-width: 768px) {
       body { padding: 15px; }
       h1 { font-size: 1.5em; }
       .results-top { flex-direction: column; align-items: stretch; }
-      .count-pill { justify-content: center; }
+      .errors-title { text-align: center; }
     }
   </style>
 </head>
@@ -338,7 +322,7 @@
       <button id="correctBtn" disabled>Analyser le document</button>
 
       <p class="info-text">
-        La correction est effectuée à l'aide du modèle Gemini 3.0 Flash Preview de Google.
+        La correction est effectuée à l'aide du modèle Gemini avec grounding web (Google Search) activé.
       </p>
 
       <div class="key-management" id="keyManagement" style="display: none;">
@@ -348,10 +332,7 @@
 
     <div class="card results-card" id="resultsCard">
       <div class="results-top">
-        <div class="count-pill">
-          <strong id="totalErrors">0</strong>
-          <span>erreurs trouvées</span>
-        </div>
+        <div class="errors-title" id="errorsTitle">0 erreurs trouvées</div>
       </div>
 
       <div id="errorsContainer"></div>
@@ -390,14 +371,22 @@
       }
     }
 
+    function pluralizeErreur(n) {
+      return n === 1 ? "erreur trouvée" : "erreurs trouvées";
+    }
+
+    function setErrorsTitle(n) {
+      const t = document.getElementById('errorsTitle');
+      if (t) t.textContent = `${n} ${pluralizeErreur(n)}`;
+    }
+
     function displayErrors(errors) {
       const resultsCard = document.getElementById('resultsCard');
-      const totalErrors = document.getElementById('totalErrors');
       const errorsContainer = document.getElementById('errorsContainer');
       const anotherBlock = document.getElementById('anotherBlock');
 
       resultsCard.classList.add('visible');
-      totalErrors.textContent = errors.length;
+      setErrorsTitle(errors.length);
 
       if (errors.length === 0) {
         errorsContainer.innerHTML = `
@@ -424,9 +413,8 @@
         return `
           <div class="err-card">
             <div class="err-head">
-              <div class="err-meta">
-                <div class="err-id">#${escapeHtml(String(id))}</div>
-                <div class="err-loc" title="${escapeHtml(loc)}">${escapeHtml(loc)}</div>
+              <div class="err-title" title="${escapeHtml(`Erreur n° ${id} : ${loc}`)}">
+                Erreur n° <span>${escapeHtml(String(id))}</span> : ${escapeHtml(loc)}
               </div>
             </div>
 
@@ -489,14 +477,19 @@
     }
 
     document.addEventListener('DOMContentLoaded', updateKeyManagementVisibility);
+    window.displayErrors = displayErrors;
+    window.escapeHtml = escapeHtml;
+    window.updateKeyManagementVisibility = updateKeyManagementVisibility;
   </script>
 
   <!-- ✅ Mammoth pour DOCX -->
   <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
 
-  <!-- ✅ Gemini + timeout 180s + retry fallback -->
+  <!-- ✅ Gemini + timeout 300s + Grounding (Google Search) -->
   <script type="module">
     import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    const CLIENT_TIMEOUT_MS = 300000; // ✅ 5 minutes
 
     function extLower(name) {
       const m = (name || "").toLowerCase().match(/\.([a-z0-9]+)$/);
@@ -527,11 +520,11 @@
 
     function showBigErrorOnPage(err, extraHint = "") {
       const errorsContainer = document.getElementById("errorsContainer");
-      const totalErrors = document.getElementById("totalErrors");
       const anotherBlock = document.getElementById("anotherBlock");
 
-      if (totalErrors) totalErrors.textContent = "0";
-
+      // titre en orange : 0 erreurs trouvées
+      window.displayErrors?.([]); // affiche le titre "0 erreurs trouvées" et remplace si besoin
+      // puis on écrase le container par l'erreur
       const detail = formatAnyError(err);
       const hint = extraHint
         ? `<div style="margin-top:10px;color:#666;font-size:0.9em;white-space:normal;">${extraHint}</div>`
@@ -547,11 +540,9 @@
       anotherBlock.style.display = "block";
     }
 
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-    async function generateWithTimeout(model, parts, ms = 180000) {
+    async function generateWithTimeout(model, parts, ms = CLIENT_TIMEOUT_MS) {
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("TIMEOUT_CLIENT_180S")), ms);
+        setTimeout(() => reject(new Error("TIMEOUT_CLIENT_300S")), ms);
       });
 
       const reqPromise = model.generateContent({
@@ -561,28 +552,29 @@
       return await Promise.race([reqPromise, timeoutPromise]);
     }
 
+    // ✅ Grounding web : tools: [{ googleSearch: {} }]
+    // ✅ Timeout : 300000ms (5 minutes)
     function buildModel(genAI, { thinkingLevel, mediaResolution }) {
       return genAI.getGenerativeModel({
+        // ⚠️ Remarque : le grounding Google Search peut ne pas être supporté sur certains modèles "preview".
+        // Mets ici un modèle compatible avec grounding si nécessaire.
         model: "gemini-3-flash-preview",
+
         generationConfig: {
           temperature: 0.3,
           thinkingConfig: { thinkingLevel },
           mediaResolution
-        }
+        },
+
+        tools: [
+          { googleSearch: {} }
+        ],
       });
     }
 
-    function isLikelyNetworkOrTimeout(err) {
+    function isTimeout(err) {
       const msg = (err?.message || "").toLowerCase();
-      return (
-        msg.includes("load failed") ||
-        msg.includes("failed to fetch") ||
-        msg.includes("network") ||
-        msg.includes("connexion réseau") ||
-        msg.includes("timeout_client_180s") ||
-        msg.includes("timeout") ||
-        msg.includes("timed out")
-      );
+      return msg.includes("timeout_client_300s") || msg.includes("timeout");
     }
 
     function makePrompt(kind /* "pdf" | "docx" */) {
@@ -605,7 +597,13 @@ Respecte scrupuleusement cette structure pour chaque erreur :
     "probleme": "Explique simplement l'erreur (ex: accord incorrect)",
     "solution": "Le passage entièrement corrigé"
   }
-]`;
+]
+
+Rappel important sur "localisation" :
+- Si le bloc est [P12], écris "Paragraphe 12"
+- Si le bloc est [H2-3], écris "Titre 2-3"
+- Si le bloc est [LI7], écris "Élément de liste 7"
+Ne mets rien d'autre dans "localisation".`;
       }
 
       return `Tu es un correcteur professionnel.
@@ -642,7 +640,6 @@ Respecte scrupuleusement cette structure pour chaque erreur :
       const hCount = { 1:0,2:0,3:0,4:0,5:0,6:0 };
       let liCount = 0;
 
-      // On parcourt dans l'ordre DOM, et on ne garde que des blocs utiles
       const blocks = [];
       const elements = body.querySelectorAll("h1,h2,h3,h4,h5,h6,p,li");
 
@@ -663,7 +660,6 @@ Respecte scrupuleusement cette structure pour chaque erreur :
           return;
         }
 
-        // headings
         const level = parseInt(tag.replace("h",""), 10);
         if (!Number.isNaN(level) && level >= 1 && level <= 6) {
           hCount[level] += 1;
@@ -713,14 +709,16 @@ Respecte scrupuleusement cette structure pour chaque erreur :
       const originalText = correctBtn.textContent;
       const resultsCard = document.getElementById("resultsCard");
       const errorsContainer = document.getElementById("errorsContainer");
-      const totalErrors = document.getElementById("totalErrors");
 
       try {
         correctBtn.disabled = true;
         correctBtn.innerHTML = '<span class="loading">Analyse en cours</span>';
 
         resultsCard.classList.add("visible");
-        if (totalErrors) totalErrors.textContent = "…";
+        // titre "… erreurs trouvées"
+        const title = document.getElementById("errorsTitle");
+        if (title) title.textContent = "Analyse en cours…";
+
         errorsContainer.innerHTML = `
           <div class="empty-state">
             <div class="loading">Lecture et analyse du document</div>
@@ -730,8 +728,7 @@ Respecte scrupuleusement cette structure pour chaque erreur :
         const buffer = await file.arrayBuffer();
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // tentative 1 : tes réglages
-        let model = buildModel(genAI, {
+        const model = buildModel(genAI, {
           thinkingLevel: "HIGH",
           mediaResolution: "MEDIA_RESOLUTION_HIGH"
         });
@@ -756,36 +753,10 @@ Respecte scrupuleusement cette structure pour chaque erreur :
           ];
         }
 
-        let result;
-        try {
-          result = await generateWithTimeout(model, parts, 180000);
-        } catch (err1) {
-          if (isLikelyNetworkOrTimeout(err1)) {
-            errorsContainer.innerHTML = `
-              <div class="empty-state">
-                <div class="loading">Requête interrompue (réseau/temps). Nouvelle tentative en mode allégé</div>
-                <div style="margin-top:10px;color:#777;font-size:0.9em;">
-                  (thinking: MEDIUM, mediaResolution: MEDIUM)
-                </div>
-              </div>
-            `;
-
-            await sleep(600);
-
-            model = buildModel(genAI, {
-              thinkingLevel: "MEDIUM",
-              mediaResolution: "MEDIA_RESOLUTION_MEDIUM"
-            });
-
-            result = await generateWithTimeout(model, parts, 180000);
-          } else {
-            showBigErrorOnPage(err1);
-            throw err1;
-          }
-        }
+        // ✅ Plus de fallback : si > 5 min => timeout, point.
+        const result = await generateWithTimeout(model, parts, CLIENT_TIMEOUT_MS);
 
         let responseText = (await result.response).text().trim();
-
         if (responseText.startsWith("```")) {
           responseText = responseText
             .replace(/^```[a-z]*\s*/i, "")
@@ -800,8 +771,12 @@ Respecte scrupuleusement cette structure pour chaque erreur :
         window.displayErrors(window.allErrors);
 
       } catch (error) {
-        const html = document.getElementById("errorsContainer")?.innerHTML || "";
-        if (!html.includes("Erreur (détails complets)")) {
+        if (isTimeout(error)) {
+          showBigErrorOnPage(
+            error,
+            "⏱️ Timeout : la requête a dépassé 5 minutes (300 secondes)."
+          );
+        } else {
           showBigErrorOnPage(error);
         }
         console.error("Erreur:", error);
