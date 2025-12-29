@@ -331,13 +331,14 @@
         }
 
         .back-link a {
-            color: #cc785c;
+            color: #8a8a8a;
             text-decoration: none;
             font-size: 0.95em;
+            transition: color 0.3s;
         }
 
         .back-link a:hover {
-            text-decoration: underline;
+            color: #cc785c;
         }
 
         @media (max-width: 768px) {
@@ -389,13 +390,13 @@
                 <input
                     type="url"
                     id="urlInput"
-                    placeholder="https://exemple.com/article"
+                    value="https://www."
                     required
                 >
                 <button id="convertBtn" onclick="convertUrl()">Convertir</button>
             </div>
             <p class="info-text">
-                Utilise l'API Jina AI Reader pour extraire le contenu principal et le convertir en markdown
+                Utilise l'API Jina AI Reader pour extraire le contenu principal et le convertir en markdown (fonctionne aussi avec les PDFs)
             </p>
         </div>
 
@@ -430,8 +431,15 @@
     <script>
         let currentMarkdown = '';
 
+        const urlInput = document.getElementById('urlInput');
+
+        // Sélectionner le texte au focus pour faciliter la saisie
+        urlInput.addEventListener('focus', function() {
+            this.select();
+        });
+
         // Permettre la conversion avec la touche Entrée
-        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+        urlInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 convertUrl();
             }
