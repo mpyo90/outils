@@ -21,6 +21,27 @@
 - Proposer le téléchargement de fichiers générés
 - **Navigation** : toujours inclure un lien en bas de page pour revenir à l'index (`index.html`)
 
+### Gestion de l'index
+Quand un nouvel outil est créé, **toujours mettre à jour `index.html`** :
+
+1. **Ajouter l'outil dans le tableau JavaScript** `tools` :
+   ```javascript
+   {
+       icon: '🔧',  // Emoji représentatif de l'outil
+       title: 'Nom de l\'outil',
+       description: 'Description courte et claire de l\'outil (1-2 phrases)',
+       url: 'nom-fichier.html',
+       keywords: ['mot-clé1', 'mot-clé2', 'mot-clé3']  // Pour la recherche
+   }
+   ```
+
+2. **Bonnes pratiques** :
+   - Choisir un emoji pertinent et unique pour l'icône
+   - Rédiger une description concise (max 2 phrases)
+   - Ajouter des mots-clés pertinents pour faciliter la recherche
+   - Vérifier que l'URL du fichier est correcte
+   - Respecter la syntaxe JavaScript (virgules, guillemets échappés)
+
 ### Hébergement
 - Les outils doivent pouvoir être hébergés sur GitHub Pages
 - Pas de dépendance à un serveur backend
