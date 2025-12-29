@@ -29,6 +29,17 @@
 - Commentaires en français
 - Noms de variables explicites
 
+### Design et interface
+- **Privilégier un design sobre et élégant** :
+  - Éviter les couleurs criardes, saturées ou trop vives (ex : indigo)
+  - Préférer des palettes neutres et douces
+  - Assurer un bon contraste entre le fond et le contenu
+- **Cohérence visuelle** :
+  - Utiliser une palette de couleurs limitée et harmonieuse
+  - Maintenir la cohérence dans les éléments similaires (boutons, notifications, focus)
+- **Espacements suffisants** : prévoir des marges adéquates entre les sections pour une lecture confortable
+- **Effets subtils** : privilégier les ombres douces et les transitions légères
+
 ## APIs externes
 - Utiliser uniquement des APIs qui supportent CORS (Cross-Origin Resource Sharing)
 - Avant d'intégrer une API, vérifier qu'elle autorise les appels depuis le navigateur
