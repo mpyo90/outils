@@ -113,8 +113,36 @@
             background-color: #d0d0d0;
         }
 
+        #cleanBtn {
+            background-color: #7a9c8c !important;
+        }
+
         #cleanBtn:hover:not(:disabled) {
-            background-color: #8a4ab3 !important;
+            background-color: #68856f !important;
+        }
+
+        #cleanBtn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        #cleanBtn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.8s linear infinite;
+        }
+
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
         }
 
         .info-text {
@@ -409,15 +437,9 @@
                 <div class="result-stats" id="stats"></div>
                 <div class="result-actions">
                     <button onclick="copyMarkdown()" id="copyBtn">📋 Copier le markdown</button>
-                    <button onclick="cleanWithGemini()" id="cleanBtn" style="background-color: #9c5ccc;">🧹 Nettoyer avec Gemini</button>
+                    <button onclick="cleanWithGemini()" id="cleanBtn">🧹 Nettoyer avec Gemini</button>
                     <button class="secondary" onclick="resetForm()">🔄 Nouvelle conversion</button>
                 </div>
-            </div>
-
-            <div style="text-align: right; margin-top: 10px;">
-                <a href="#" onclick="manageGeminiKey(); return false;" style="font-size: 0.85em; color: #666; text-decoration: none;">
-                    ⚙️ Gérer la clé API Gemini
-                </a>
             </div>
 
             <div class="tabs">
@@ -435,6 +457,12 @@
                     💡 Vous pouvez éditer le markdown directement. La prévisualisation se met à jour automatiquement.<br>
                     🧹 Utilisez le bouton "Nettoyer avec Gemini" pour supprimer automatiquement les menus, images et éléments de navigation.
                 </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                <a href="#" onclick="deleteGeminiKey(); return false;" style="font-size: 0.85em; color: #999; text-decoration: none;">
+                    🗑️ Supprimer la clé API Gemini
+                </a>
             </div>
         </div>
 
@@ -631,28 +659,18 @@
             return div.innerHTML;
         }
 
-        // Fonction pour gérer la clé API Gemini
-        function manageGeminiKey() {
+        // Fonction pour supprimer la clé API Gemini
+        function deleteGeminiKey() {
             const currentKey = localStorage.getItem('gemini-api-key');
-            const message = currentKey
-                ? 'Clé API Gemini actuelle (masquée) : ' + currentKey.substring(0, 8) + '...\n\nOptions :\n1. Cliquez sur OK pour entrer une nouvelle clé\n2. Cliquez sur Annuler pour supprimer la clé'
-                : 'Aucune clé API Gemini enregistrée.\n\nVous pouvez obtenir une clé gratuite sur :\nhttps://aistudio.google.com/app/apikey';
 
-            const action = confirm(message);
+            if (!currentKey) {
+                alert('Aucune clé API Gemini enregistrée.');
+                return;
+            }
 
-            if (action) {
-                // Entrer une nouvelle clé
-                const newKey = prompt('Entrez votre clé API Google Gemini :\n\n(Elle sera stockée localement dans votre navigateur)');
-                if (newKey && newKey.trim()) {
-                    localStorage.setItem('gemini-api-key', newKey.trim());
-                    alert('✓ Clé API enregistrée avec succès !');
-                }
-            } else if (currentKey) {
-                // Supprimer la clé
-                if (confirm('Voulez-vous vraiment supprimer la clé API enregistrée ?')) {
-                    localStorage.removeItem('gemini-api-key');
-                    alert('✓ Clé API supprimée');
-                }
+            if (confirm('Voulez-vous vraiment supprimer la clé API Gemini enregistrée ?\n\nVous devrez la saisir à nouveau lors du prochain nettoyage.')) {
+                localStorage.removeItem('gemini-api-key');
+                alert('✓ Clé API supprimée avec succès');
             }
         }
     </script>
@@ -691,8 +709,8 @@
             try {
                 // Désactiver le bouton et afficher le chargement
                 cleanBtn.disabled = true;
-                cleanBtn.textContent = '⏳ Nettoyage en cours...';
-                cleanBtn.style.backgroundColor = '#999';
+                cleanBtn.classList.add('loading');
+                cleanBtn.textContent = 'Nettoyage en cours...';
 
                 // Initialiser Gemini
                 const genAI = new GoogleGenerativeAI(apiKey);
@@ -755,12 +773,13 @@ ${markdown}`;
                 window.updatePreview();
 
                 // Feedback de succès
+                cleanBtn.classList.remove('loading');
                 cleanBtn.textContent = '✓ Nettoyé !';
                 cleanBtn.style.backgroundColor = '#4caf50';
 
                 setTimeout(() => {
                     cleanBtn.textContent = originalText;
-                    cleanBtn.style.backgroundColor = originalBg;
+                    cleanBtn.style.backgroundColor = '';
                     cleanBtn.disabled = false;
                 }, 2000);
 
@@ -785,8 +804,9 @@ ${markdown}`;
                 }
 
                 // Restaurer le bouton
+                cleanBtn.classList.remove('loading');
                 cleanBtn.textContent = originalText;
-                cleanBtn.style.backgroundColor = originalBg;
+                cleanBtn.style.backgroundColor = '';
                 cleanBtn.disabled = false;
             }
         };
