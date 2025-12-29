@@ -20,6 +20,18 @@
 - Permettre l'ouverture de fichiers locaux via `<input type="file">`
 - Proposer le téléchargement de fichiers générés
 - **Navigation** : toujours inclure un lien en bas de page pour revenir à l'index (`index.html`)
+  - Le lien doit être **en orange** (#cc785c) et se souligner au survol
+  - Exemple de style CSS :
+    ```css
+    .back-link a {
+        color: #cc785c;
+        text-decoration: none;
+    }
+    .back-link a:hover {
+        text-decoration: underline;
+    }
+    ```
+  - Texte recommandé : "← Retour à la liste des outils" ou "← Retour à l'index des outils"
 
 ### Gestion de l'index
 Quand un nouvel outil est créé, **toujours mettre à jour `index.html`** :
