@@ -73,7 +73,7 @@
 
         textarea:focus {
             outline: none;
-            border-color: #4f46e5;
+            border-color: #475569;
         }
 
         .button-group {
@@ -97,14 +97,14 @@
         }
 
         .btn-primary {
-            background: #4f46e5;
+            background: #475569;
             color: white;
         }
 
         .btn-primary:hover {
-            background: #4338ca;
+            background: #334155;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
         }
 
         .btn-secondary {
@@ -149,11 +149,11 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #4f46e5;
+            background: #475569;
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
             opacity: 0;
             transform: translateY(-20px);
             transition: all 0.3s;
@@ -217,7 +217,7 @@
         <div class="section">
             <div class="section-title">
                 <span>✨ Résultat</span>
-                <button class="btn-secondary btn-small" onclick="copyOutput()">📋 Copier</button>
+                <button class="btn-secondary btn-small" onclick="copyOutput()">Copier</button>
             </div>
             <textarea id="output" placeholder="Le résultat apparaîtra ici..." readonly></textarea>
             <div class="stats" id="outputStats">
@@ -328,7 +328,7 @@
          */
         function showNotification(message, type = 'success') {
             notification.textContent = message;
-            notification.style.background = type === 'warning' ? '#dc2626' : '#4f46e5';
+            notification.style.background = type === 'warning' ? '#dc2626' : '#475569';
             notification.classList.add('show');
 
             setTimeout(() => {
