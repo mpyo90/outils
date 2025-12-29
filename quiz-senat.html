@@ -644,107 +644,81 @@
     <script>
         // Membres du Bureau du Sénat (26)
         const bureauMembers = [
-            { nom: "LARCHER", prenom: "Gérard", fonction: "Président", type: "president", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/larcher_gerard86034e_carre.jpg", category: "bureau" },
-            { nom: "MANDELLI", prenom: "Didier", fonction: "Vice-président", type: "vice", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/mandelli_didier14031r_carre.jpg", category: "bureau" },
-            { nom: "ROBERT", prenom: "Sylvie", fonction: "Vice-présidente", type: "vice", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/robert_sylvie14229s_carre.jpg", category: "bureau" },
-            { nom: "VERMEILLET", prenom: "Sylvie", fonction: "Vice-présidente", type: "vice", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/vermeillet_sylvie19479g_carre.jpg", category: "bureau" },
-            { nom: "IACOVELLI", prenom: "Xavier", fonction: "Vice-président", type: "vice", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/iacovelli_xavier19591f_carre.jpg", category: "bureau" },
-            { nom: "MARC", prenom: "Alain", fonction: "Vice-président", type: "vice", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/marc_alain14111d_carre.jpg", category: "bureau" },
-            { nom: "OUZOULIAS", prenom: "Pierre", fonction: "Vice-président", type: "vice", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/ouzoulias_pierre19593h_carre.jpg", category: "bureau" },
-            { nom: "CHAIN-LARCHÉ", prenom: "Anne", fonction: "Vice-présidente", type: "vice", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/chain_larche_anne14329v_carre.jpg", category: "bureau" },
-            { nom: "HERVÉ", prenom: "Loïc", fonction: "Vice-président", type: "vice", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/herve_loic14179a_carre.jpg", category: "bureau" },
-            { nom: "LEFÈVRE", prenom: "Antoine", fonction: "Questeur", type: "questeur", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/lefevre_antoine08010l_carre.jpg", category: "bureau" },
-            { nom: "CARLOTTI", prenom: "Marie-Arlette", fonction: "Questeur", type: "questeur", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/carlotti_marie_arlette12028b_carre.jpg", category: "bureau" },
-            { nom: "CIGOLOTTI", prenom: "Olivier", fonction: "Questeur", type: "questeur", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/cigolotti_olivier14267y_carre.jpg", category: "bureau" },
-            { nom: "ARNAUD", prenom: "Jean-Michel", fonction: "Secrétaire", type: "secretaire", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/arnaud_jean_michel14189c_carre.jpg", category: "bureau" },
-            { nom: "BENARROCHE", prenom: "Guy", fonction: "Secrétaire", type: "secretaire", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/benarroche_guy20110q_carre.jpg", category: "bureau" },
-            { nom: "BONHOMME", prenom: "François", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/bonhomme_francois14069u_carre.jpg", category: "bureau" },
-            { nom: "BONNEFOY", prenom: "Nicole", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/bonnefoy_nicole08060w_carre.jpg", category: "bureau" },
-            { nom: "BORCHIO FONTIMP", prenom: "Alexandra", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/borchio_fontimp_alexandra20138d_carre.jpg", category: "bureau" },
-            { nom: "BRULIN", prenom: "Céline", fonction: "Secrétaire", type: "secretaire", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/brulin_celine19758l_carre.jpg", category: "bureau" },
-            { nom: "BUIS", prenom: "Bernard", fonction: "Secrétaire", type: "secretaire", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/buis_bernard19782l_carre.jpg", category: "bureau" },
-            { nom: "CONCONNE", prenom: "Catherine", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/conconne_catherine19295a_carre.jpg", category: "bureau" },
-            { nom: "DI FOLCO", prenom: "Catherine", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/di_folco_catherine14215l_carre.jpg", category: "bureau" },
-            { nom: "GENET", prenom: "Fabien", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/genet_fabien20120s_carre.jpg", category: "bureau" },
-            { nom: "GUILLOTIN", prenom: "Véronique", fonction: "Secrétaire", type: "secretaire", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/guillotin_veronique19553y_carre.jpg", category: "bureau" },
-            { nom: "de LA PROVÔTÉ", prenom: "Sonia", fonction: "Secrétaire", type: "secretaire", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/de_la_provote_sonia19735d_carre.jpg", category: "bureau" },
-            { nom: "RICHER", prenom: "Marie-Pierre", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/richer_marie_pierre19798u_carre.jpg", category: "bureau" },
-            { nom: "VALLET", prenom: "Mickaël", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/vallet_mickael20064c_carre.jpg", category: "bureau" },
+            { nom: "LARCHER", prenom: "Gérard", fonction: "Président", type: "president", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/larcher_gerard86034e_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "MANDELLI", prenom: "Didier", fonction: "Vice-président", type: "vice", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/mandelli_didier14031r_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "ROBERT", prenom: "Sylvie", fonction: "Vice-présidente", type: "vice", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/robert_sylvie14229s_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "VERMEILLET", prenom: "Sylvie", fonction: "Vice-présidente", type: "vice", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/vermeillet_sylvie19479g_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "IACOVELLI", prenom: "Xavier", fonction: "Vice-président", type: "vice", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/iacovelli_xavier19591f_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "MARC", prenom: "Alain", fonction: "Vice-président", type: "vice", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/marc_alain14111d_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "OUZOULIAS", prenom: "Pierre", fonction: "Vice-président", type: "vice", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/ouzoulias_pierre19593h_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "CHAIN-LARCHÉ", prenom: "Anne", fonction: "Vice-présidente", type: "vice", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/chain_larche_anne14329v_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "HERVÉ", prenom: "Loïc", fonction: "Vice-président", type: "vice", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/herve_loic14179a_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "LEFÈVRE", prenom: "Antoine", fonction: "Questeur", type: "questeur", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/lefevre_antoine08010l_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "CARLOTTI", prenom: "Marie-Arlette", fonction: "Questeur", type: "questeur", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/carlotti_marie_arlette12028b_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "CIGOLOTTI", prenom: "Olivier", fonction: "Questeur", type: "questeur", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/cigolotti_olivier14267y_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "ARNAUD", prenom: "Jean-Michel", fonction: "Secrétaire", type: "secretaire", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/arnaud_jean_michel14189c_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "BENARROCHE", prenom: "Guy", fonction: "Secrétaire", type: "secretaire", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/benarroche_guy20110q_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "BONHOMME", prenom: "François", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/bonhomme_francois14069u_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "BONNEFOY", prenom: "Nicole", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/bonnefoy_nicole08060w_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "BORCHIO FONTIMP", prenom: "Alexandra", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/borchio_fontimp_alexandra20138d_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "BRULIN", prenom: "Céline", fonction: "Secrétaire", type: "secretaire", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/brulin_celine19758l_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "BUIS", prenom: "Bernard", fonction: "Secrétaire", type: "secretaire", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/buis_bernard19782l_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "CONCONNE", prenom: "Catherine", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/conconne_catherine19295a_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "DI FOLCO", prenom: "Catherine", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/di_folco_catherine14215l_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "GENET", prenom: "Fabien", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/genet_fabien20120s_carre.jpg", category: "bureau", genre: "M" },
+            { nom: "GUILLOTIN", prenom: "Véronique", fonction: "Secrétaire", type: "secretaire", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/guillotin_veronique19553y_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "de LA PROVÔTÉ", prenom: "Sonia", fonction: "Secrétaire", type: "secretaire", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/de_la_provote_sonia19735d_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "RICHER", prenom: "Marie-Pierre", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/richer_marie_pierre19798u_carre.jpg", category: "bureau", genre: "F" },
+            { nom: "VALLET", prenom: "Mickaël", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/vallet_mickael20064c_carre.jpg", category: "bureau", genre: "M" },
         ];
 
         // Membres du Comité de déontologie parlementaire (9)
         const cdpMembers = [
-            { nom: "BAZIN", prenom: "Arnaud", fonction: "Président CDP", type: "cdp", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/bazin_arnaud19667j_carre.jpg", category: "cdp" },
-            { nom: "HARRIBEY", prenom: "Laurence", fonction: "Vice-Présidente CDP", type: "cdp", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/harribey_laurence19725b_carre.jpg", category: "cdp" },
-            { nom: "BACCHI", prenom: "Jérémy", fonction: "Membre CDP", type: "cdp", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/bacchi_jeremy20112s_carre.jpg", category: "cdp" },
-            { nom: "CABANEL", prenom: "Henri", fonction: "Membre CDP", type: "cdp", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/cabanel_henri14207l_carre.jpg", category: "cdp" },
-            { nom: "CAPUS", prenom: "Emmanuel", fonction: "Membre CDP", type: "cdp", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/capus_emmanuel19545y_carre.jpg", category: "cdp" },
-            { nom: "FERNIQUE", prenom: "Jacques", fonction: "Membre CDP", type: "cdp", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/fernique_jacques20100n_carre.jpg", category: "cdp" },
-            { nom: "IMBERT", prenom: "Corinne", fonction: "Membre CDP", type: "cdp", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/imbert_corinne14213j_carre.jpg", category: "cdp" },
-            { nom: "LEVI", prenom: "Pierre-Antoine", fonction: "Membre CDP", type: "cdp", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/levi_pierre_antoine20052x_carre.jpg", category: "cdp" },
-            { nom: "THÉOPHILE", prenom: "Dominique", fonction: "Membre CDP", type: "cdp", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/theophile_dominique19301e_carre.jpg", category: "cdp" },
+            { nom: "BAZIN", prenom: "Arnaud", fonction: "Président CDP", type: "cdp", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/bazin_arnaud19667j_carre.jpg", category: "cdp", genre: "M" },
+            { nom: "HARRIBEY", prenom: "Laurence", fonction: "Vice-Présidente CDP", type: "cdp", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/harribey_laurence19725b_carre.jpg", category: "cdp", genre: "F" },
+            { nom: "BACCHI", prenom: "Jérémy", fonction: "Membre CDP", type: "cdp", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/bacchi_jeremy20112s_carre.jpg", category: "cdp", genre: "M" },
+            { nom: "CABANEL", prenom: "Henri", fonction: "Membre CDP", type: "cdp", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/cabanel_henri14207l_carre.jpg", category: "cdp", genre: "M" },
+            { nom: "CAPUS", prenom: "Emmanuel", fonction: "Membre CDP", type: "cdp", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/capus_emmanuel19545y_carre.jpg", category: "cdp", genre: "M" },
+            { nom: "FERNIQUE", prenom: "Jacques", fonction: "Membre CDP", type: "cdp", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/fernique_jacques20100n_carre.jpg", category: "cdp", genre: "M" },
+            { nom: "IMBERT", prenom: "Corinne", fonction: "Membre CDP", type: "cdp", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/imbert_corinne14213j_carre.jpg", category: "cdp", genre: "F" },
+            { nom: "LEVI", prenom: "Pierre-Antoine", fonction: "Membre CDP", type: "cdp", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/levi_pierre_antoine20052x_carre.jpg", category: "cdp", genre: "M" },
+            { nom: "THÉOPHILE", prenom: "Dominique", fonction: "Membre CDP", type: "cdp", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/theophile_dominique19301e_carre.jpg", category: "cdp", genre: "M" },
         ];
 
         // Présidents de groupe (8)
         const presGroupeMembers = [
-            { nom: "DARNAUD", prenom: "Mathieu", fonction: "Président groupe LR", type: "pres-groupe", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/darnaud_mathieu14259y_carre.jpg", category: "pres-groupe" },
-            { nom: "KANNER", prenom: "Patrick", fonction: "Président groupe SER", type: "pres-groupe", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/kanner_patrick14021p_carre.jpg", category: "pres-groupe" },
-            { nom: "MARSEILLE", prenom: "Hervé", fonction: "Président groupe UC", type: "pres-groupe", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/marseille_herve11085t_carre.jpg", category: "pres-groupe" },
-            { nom: "MALHURET", prenom: "Claude", fonction: "Président groupe LIRT", type: "pres-groupe", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/malhuret_claude14251q_carre.jpg", category: "pres-groupe" },
-            { nom: "PATRIAT", prenom: "François", fonction: "Président groupe RDPI", type: "pres-groupe", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/patriat_francois08061x_carre.jpg", category: "pres-groupe" },
-            { nom: "CUKIERMAN", prenom: "Cécile", fonction: "Présidente groupe CRCE-K", type: "pres-groupe", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/cukierman_cecile11056n_carre.jpg", category: "pres-groupe" },
-            { nom: "CARRÈRE", prenom: "Maryse", fonction: "Présidente groupe RDSE", type: "pres-groupe", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/carrere_maryse19629c_carre.jpg", category: "pres-groupe" },
-            { nom: "GONTARD", prenom: "Guillaume", fonction: "Président groupe EST", type: "pres-groupe", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/gontard_guillaume19347u_carre.jpg", category: "pres-groupe" },
+            { nom: "DARNAUD", prenom: "Mathieu", fonction: "Président groupe LR", type: "pres-groupe", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/darnaud_mathieu14259y_carre.jpg", category: "pres-groupe", genre: "M" },
+            { nom: "KANNER", prenom: "Patrick", fonction: "Président groupe SER", type: "pres-groupe", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/kanner_patrick14021p_carre.jpg", category: "pres-groupe", genre: "M" },
+            { nom: "MARSEILLE", prenom: "Hervé", fonction: "Président groupe UC", type: "pres-groupe", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/marseille_herve11085t_carre.jpg", category: "pres-groupe", genre: "M" },
+            { nom: "MALHURET", prenom: "Claude", fonction: "Président groupe LIRT", type: "pres-groupe", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/malhuret_claude14251q_carre.jpg", category: "pres-groupe", genre: "M" },
+            { nom: "PATRIAT", prenom: "François", fonction: "Président groupe RDPI", type: "pres-groupe", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/patriat_francois08061x_carre.jpg", category: "pres-groupe", genre: "M" },
+            { nom: "CUKIERMAN", prenom: "Cécile", fonction: "Présidente groupe CRCE-K", type: "pres-groupe", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/cukierman_cecile11056n_carre.jpg", category: "pres-groupe", genre: "F" },
+            { nom: "CARRÈRE", prenom: "Maryse", fonction: "Présidente groupe RDSE", type: "pres-groupe", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/carrere_maryse19629c_carre.jpg", category: "pres-groupe", genre: "F" },
+            { nom: "GONTARD", prenom: "Guillaume", fonction: "Président groupe EST", type: "pres-groupe", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/gontard_guillaume19347u_carre.jpg", category: "pres-groupe", genre: "M" },
         ];
 
         // Présidents de commission (7)
         const presCommissionMembers = [
-            { nom: "LAFON", prenom: "Laurent", fonction: "Prés. com. Culture", type: "pres-commission", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/lafon_laurent19611r_carre.jpg", category: "pres-commission" },
-            { nom: "ESTROSI SASSONE", prenom: "Dominique", fonction: "Prés. com. Éco.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/estrosi_sassone_dominique14187a_carre.jpg", category: "pres-commission" },
-            { nom: "PERRIN", prenom: "Cédric", fonction: "Prés. com. Aff. étr.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/perrin_cedric14193x_carre.jpg", category: "pres-commission" },
-            { nom: "MOUILLER", prenom: "Philippe", fonction: "Prés. com. Aff. soc.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/mouiller_philippe14071n_carre.jpg", category: "pres-commission" },
-            { nom: "LONGEOT", prenom: "Jean-François", fonction: "Prés. com. Aménag.", type: "pres-commission", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/longeot_jean_francois14219q_carre.jpg", category: "pres-commission" },
-            { nom: "RAYNAL", prenom: "Claude", fonction: "Prés. com. Finances", type: "pres-commission", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/raynal_claude14225n_carre.jpg", category: "pres-commission" },
-            { nom: "JOURDA", prenom: "Muriel", fonction: "Prés. com. Lois", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/jourda_muriel19447x_carre.jpg", category: "pres-commission" },
+            { nom: "LAFON", prenom: "Laurent", fonction: "Prés. com. Culture", type: "pres-commission", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/lafon_laurent19611r_carre.jpg", category: "pres-commission", genre: "M" },
+            { nom: "ESTROSI SASSONE", prenom: "Dominique", fonction: "Prés. com. Éco.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/estrosi_sassone_dominique14187a_carre.jpg", category: "pres-commission", genre: "F" },
+            { nom: "PERRIN", prenom: "Cédric", fonction: "Prés. com. Aff. étr.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/perrin_cedric14193x_carre.jpg", category: "pres-commission", genre: "M" },
+            { nom: "MOUILLER", prenom: "Philippe", fonction: "Prés. com. Aff. soc.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/mouiller_philippe14071n_carre.jpg", category: "pres-commission", genre: "M" },
+            { nom: "LONGEOT", prenom: "Jean-François", fonction: "Prés. com. Aménag.", type: "pres-commission", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/longeot_jean_francois14219q_carre.jpg", category: "pres-commission", genre: "M" },
+            { nom: "RAYNAL", prenom: "Claude", fonction: "Prés. com. Finances", type: "pres-commission", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/raynal_claude14225n_carre.jpg", category: "pres-commission", genre: "M" },
+            { nom: "JOURDA", prenom: "Muriel", fonction: "Prés. com. Lois", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/jourda_muriel19447x_carre.jpg", category: "pres-commission", genre: "F" },
         ];
 
         // Présidents de délégation (5)
         const presDelegationMembers = [
-            { nom: "DELCROS", prenom: "Bernard", fonction: "Prés. dél. Coll. terr.", type: "pres-delegation", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/delcros_bernard14327t_carre.jpg", category: "pres-delegation" },
-            { nom: "VÉRIEN", prenom: "Dominique", fonction: "Prés. dél. Droits femmes", type: "pres-delegation", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/verien_dominique19749k_carre.jpg", category: "pres-delegation" },
-            { nom: "RIETMANN", prenom: "Olivier", fonction: "Prés. dél. Entreprises", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/rietmann_olivier20054a_carre.jpg", category: "pres-delegation" },
-            { nom: "JACQUES", prenom: "Micheline", fonction: "Prés. dél. Outre-mer", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/jacques_micheline20034v_carre.jpg", category: "pres-delegation" },
-            { nom: "LAVARDE", prenom: "Christine", fonction: "Prés. dél. Prospective", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/lavarde_christine19711u_carre.jpg", category: "pres-delegation" },
+            { nom: "DELCROS", prenom: "Bernard", fonction: "Prés. dél. Coll. terr.", type: "pres-delegation", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/delcros_bernard14327t_carre.jpg", category: "pres-delegation", genre: "M" },
+            { nom: "VÉRIEN", prenom: "Dominique", fonction: "Prés. dél. Droits femmes", type: "pres-delegation", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/verien_dominique19749k_carre.jpg", category: "pres-delegation", genre: "F" },
+            { nom: "RIETMANN", prenom: "Olivier", fonction: "Prés. dél. Entreprises", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/rietmann_olivier20054a_carre.jpg", category: "pres-delegation", genre: "M" },
+            { nom: "JACQUES", prenom: "Micheline", fonction: "Prés. dél. Outre-mer", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/jacques_micheline20034v_carre.jpg", category: "pres-delegation", genre: "F" },
+            { nom: "LAVARDE", prenom: "Christine", fonction: "Prés. dél. Prospective", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/lavarde_christine19711u_carre.jpg", category: "pres-delegation", genre: "F" },
         ];
 
         // Tous les membres
         const allMembers = [...bureauMembers, ...cdpMembers, ...presGroupeMembers, ...presCommissionMembers, ...presDelegationMembers];
-
-        // Fonction pour déterminer le genre basé sur le prénom
-        function getGenre(prenom) {
-            const prenomLower = prenom.toLowerCase();
-            const prenomsfeminins = ['marie', 'sylvie', 'anne', 'nicole', 'alexandra', 'céline', 'catherine', 'sonia', 'véronique', 'laurence', 'corinne', 'cécile', 'maryse', 'muriel', 'micheline', 'christine'];
-            const prenomsMasculins = ['gérard', 'didier', 'xavier', 'alain', 'pierre', 'loïc', 'antoine', 'olivier', 'jean-michel', 'guy', 'françois', 'bernard', 'fabien', 'mickaël', 'arnaud', 'jérémy', 'henri', 'emmanuel', 'jacques', 'pierre-antoine', 'mathieu', 'patrick', 'hervé', 'guillaume', 'laurent', 'cédric', 'philippe', 'jean-françois'];
-
-            // Cas spéciaux : Claude et Dominique peuvent être mixtes
-            if (prenomLower.includes('marie') || prenomLower.includes('arlette')) return 'F';
-
-            for (const p of prenomsfeminins) {
-                if (prenomLower.includes(p)) return 'F';
-            }
-            for (const p of prenomsMasculins) {
-                if (prenomLower.includes(p)) return 'M';
-            }
-
-            // Par défaut, si on ne trouve pas, on regarde les terminaisons
-            if (prenomLower.endsWith('e') || prenomLower.endsWith('a')) return 'F';
-            return 'M';
-        }
-
-        // Ajouter le genre à tous les membres
-        allMembers.forEach(m => {
-            m.genre = getGenre(m.prenom);
-        });
 
         // Liste des groupes uniques pour le QCM
         const groupes = [...new Set(allMembers.map(m => m.groupe))];
