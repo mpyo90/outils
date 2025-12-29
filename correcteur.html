@@ -62,6 +62,7 @@
     button.secondary { background-color: #e0e0e0; color: #2d2d2d; }
     button.secondary:hover:not(:disabled) { background-color: #d0d0d0; }
 
+    .loading-text { font-style: italic; font-weight: normal; opacity: 0.9; }
     .info-text { font-size: 0.85em; color: #666; font-style: italic; margin-top: 10px; }
 
     .results-section { display: none; margin-bottom: 25px; }
@@ -262,7 +263,10 @@
       40% { content: '..'; }
       60%, 100% { content: '...'; }
     }
-    .loading::after { content: '...'; animation: dots 1.5s steps(4, end) infinite; }
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
   </style>
 </head>
 
@@ -306,6 +310,7 @@
           </div>
         </div>
         <div class="actions">
+          <!-- ✅ 3.1: on passe event explicitement -->
           <button onclick="exportJSON(event)">📋 Copier JSON</button>
           <button onclick="exportCSV()">📊 Exporter CSV</button>
           <button class="secondary" onclick="resetForm()">🔄 Nouveau document</button>
@@ -457,6 +462,7 @@
       }
     }
 
+    // ✅ 3.1: on reçoit event pour accéder à event.target proprement
     async function exportJSON(event) {
       if (allErrors.length === 0) {
         alert('Aucune erreur à exporter');
@@ -572,11 +578,12 @@
     document.addEventListener('DOMContentLoaded', updateKeyManagementVisibility);
   </script>
 
-  <!-- Script module : inlineData (base64), et on garde thinkingLevel + mediaResolution -->
+  <!-- ✅ 2) Script module : inlineData (base64), sans GoogleAIFileManager -->
   <script type="module">
     import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
     function arrayBufferToBase64(buffer) {
+      // conversion chunkée (évite call stack sur gros fichiers)
       let binary = "";
       const bytes = new Uint8Array(buffer);
       const chunkSize = 0x8000;
@@ -592,6 +599,7 @@
         return;
       }
 
+      // clé API
       let apiKey = localStorage.getItem("gemini-api-key");
       if (!apiKey) {
         apiKey = prompt(
@@ -624,11 +632,7 @@
         const model = genAI.getGenerativeModel({
           model: "gemini-3-flash-preview",
           generationConfig: {
-            temperature: 0.3,
-            thinkingConfig: {
-              thinkingLevel: "HIGH"
-            },
-            mediaResolution: "MEDIA_RESOLUTION_HIGH"
+            temperature: 0.3
           }
         });
 
@@ -661,6 +665,7 @@ Respecte scrupuleusement cette structure pour chaque erreur :
 
         let responseText = (await result.response).text().trim();
 
+        // nettoyage markdown si jamais
         if (responseText.startsWith("```")) {
           responseText = responseText
             .replace(/^```[a-z]*\s*/i, "")
@@ -674,6 +679,7 @@ Respecte scrupuleusement cette structure pour chaque erreur :
 
         window.displayErrors(window.allErrors);
 
+        // feedback succès
         const successMsg = document.createElement("div");
         successMsg.className = "success";
         successMsg.textContent = `✓ Analyse terminée ! ${window.allErrors.length} erreur${window.allErrors.length > 1 ? "s" : ""} détectée${window.allErrors.length > 1 ? "s" : ""}.`;
@@ -711,6 +717,7 @@ Respecte scrupuleusement cette structure pour chaque erreur :
       }
     }
 
+    // Attacher le handler au bouton
     document.getElementById("correctBtn").addEventListener("click", correctDocument);
   </script>
 </body>
