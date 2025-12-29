@@ -88,13 +88,9 @@
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             white-space: nowrap;
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        button:hover {
+        button:hover:not(.tab) {
             background-color: #b86a4e;
         }
 
@@ -125,21 +121,10 @@
             background-color: #68856f !important;
         }
 
-        #cleanBtn.loading::after {
-            content: '';
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            margin-left: 10px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spinner 0.8s linear infinite;
-            flex-shrink: 0;
-        }
-
-        @keyframes spinner {
-            to { transform: rotate(360deg); }
+        #cleanBtn .loading-text {
+            font-style: italic;
+            font-weight: normal;
+            opacity: 0.9;
         }
 
         .info-text {
@@ -202,6 +187,10 @@
         .tab.active {
             color: #cc785c;
             border-bottom-color: #cc785c;
+        }
+
+        .tab:hover:not(.active) {
+            color: #999;
         }
 
         .tab-content {
@@ -722,7 +711,7 @@
             try {
                 // Désactiver le bouton et afficher le chargement
                 cleanBtn.disabled = true;
-                cleanBtn.classList.add('loading');
+                cleanBtn.innerHTML = '🧹 Nettoyer avec Gemini <span class="loading-text">(en cours...)</span>';
 
                 // Initialiser Gemini
                 const genAI = new GoogleGenerativeAI(apiKey);
@@ -785,7 +774,6 @@ ${markdown}`;
                 window.updatePreview();
 
                 // Feedback de succès
-                cleanBtn.classList.remove('loading');
                 cleanBtn.textContent = '✓ Nettoyé !';
                 cleanBtn.style.backgroundColor = '#4caf50';
 
@@ -816,7 +804,6 @@ ${markdown}`;
                 }
 
                 // Restaurer le bouton
-                cleanBtn.classList.remove('loading');
                 cleanBtn.textContent = originalText;
                 cleanBtn.style.backgroundColor = '';
                 cleanBtn.disabled = false;
