@@ -19,6 +19,7 @@
 - Utiliser localStorage pour les secrets (clés API) ou les données volumineuses
 - Permettre l'ouverture de fichiers locaux via `<input type="file">`
 - Proposer le téléchargement de fichiers générés
+- **Navigation** : toujours inclure un lien en bas de page pour revenir à l'index (`index.html`)
 
 ### Hébergement
 - Les outils doivent pouvoir être hébergés sur GitHub Pages
