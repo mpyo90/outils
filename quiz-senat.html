@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - Sénat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: #93c5fd;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* Menu */
+        #menu {
+            display: block;
+        }
+
+        .filter-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-section h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .filter-btn.active {
+            background: white;
+            color: #1e3a8a;
+            border-color: white;
+        }
+
+        .filter-count {
+            color: #93c5fd;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+
+        .mode-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            padding: 20px;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            text-align: left;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mode-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .mode-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .mode-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .mode-icon.blue { background: #dbeafe; }
+        .mode-icon.green { background: #d1fae5; }
+        .mode-icon.orange { background: #fef3c7; }
+
+        .mode-btn h4 {
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .mode-btn p {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+
+        /* Quiz */
+        #quiz {
+            display: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            color: rgba(255,255,255,0.8);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-btn:hover {
+            color: white;
+        }
+
+        .progress-text {
+            color: white;
+        }
+
+        .score {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .photo-section {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            flex-shrink: 0;
+            background: #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .fonction-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid;
+            width: fit-content;
+        }
+
+        .badge-president { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        .badge-vice { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .badge-questeur { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .badge-secretaire { background: #ede9fe; color: #5b21b6; border-color: #c4b5fd; }
+        .badge-cdp { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+        .badge-pres-groupe { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
+        .badge-pres-commission { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
+        .badge-pres-delegation { background: #d1fae5; color: #047857; border-color: #6ee7b7; }
+
+        .groupe-politique {
+            font-size: 0.85rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .groupe-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .groupe-lr { background: #dbeafe; color: #1e40af; }
+        .groupe-ser { background: #fce7f3; color: #9d174d; }
+        .groupe-uc { background: #fef3c7; color: #92400e; }
+        .groupe-rdpi { background: #e0e7ff; color: #3730a3; }
+        .groupe-lirt { background: #f3e8ff; color: #6b21a8; }
+        .groupe-crce { background: #fee2e2; color: #991b1b; }
+        .groupe-est { background: #d1fae5; color: #065f46; }
+        .groupe-rdse { background: #fef9c3; color: #854d0e; }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .answer-display {
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        .answer-display .name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .answer-display .fonction {
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .show-btn {
+            width: 100%;
+            padding: 15px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .show-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* QCM */
+        .qcm-question {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .qcm-step-indicator {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .step-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 5px;
+            background: #e5e7eb;
+        }
+
+        .step-dot.active {
+            background: #2563eb;
+        }
+
+        .step-dot.done {
+            background: #10b981;
+        }
+
+        .qcm-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .qcm-option {
+            width: 100%;
+            padding: 14px;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .qcm-option:hover:not(:disabled) {
+            background: #dbeafe;
+        }
+
+        .qcm-option.correct {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .qcm-option.incorrect {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .qcm-option:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .qcm-name-result {
+            text-align: center;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .qcm-name-result .name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        /* Quiz libre */
+        .quiz-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .quiz-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .check-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .feedback.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .feedback.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            padding: 0 20px 20px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.secondary {
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #6b7280;
+        }
+
+        .nav-btn.secondary:hover:not(:disabled) {
+            background: #f9fafb;
+        }
+
+        .nav-btn.primary {
+            background: #2563eb;
+            border: none;
+            color: white;
+        }
+
+        .nav-btn.primary:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .key-hint {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-left: 5px;
+        }
+
+        /* Final score */
+        .final-score {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .final-score h3 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .final-score p {
+            color: #93c5fd;
+            font-size: 1.1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ Sénat</h1>
+        <p class="subtitle">Apprenez à reconnaître les sénateurs clés</p>
+
+        <!-- MENU -->
+        <div id="menu">
+            <div class="filter-section">
+                <h3>Filtrer par :</h3>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="bureau">Bureau (26)</button>
+                    <button class="filter-btn" data-filter="cdp">CDP (9)</button>
+                    <button class="filter-btn" data-filter="pres-groupe">Prés. de groupe (8)</button>
+                    <button class="filter-btn" data-filter="pres-commission">Prés. de com. (7)</button>
+                    <button class="filter-btn" data-filter="pres-delegation">Prés. de dél. (5)</button>
+                </div>
+                <p class="filter-count" id="filterCount">26 sénateurs sélectionnés</p>
+            </div>
+
+            <button class="mode-btn" data-mode="flashcard">
+                <div class="mode-icon blue">📖</div>
+                <div>
+                    <h4>Flashcards</h4>
+                    <p>Parcourez les photos pour mémoriser</p>
+                </div>
+            </button>
+
+            <button class="mode-btn" data-mode="qcm">
+                <div class="mode-icon green">🧠</div>
+                <div>
+                    <h4>Quiz QCM</h4>
+                    <p>Devinez le nom puis le groupe politique</p>
+                </div>
+            </button>
+
+            <button class="mode-btn" data-mode="libre">
+                <div class="mode-icon orange">🏆</div>
+                <div>
+                    <h4>Quiz Libre</h4>
+                    <p>Tapez le nom - mode expert !</p>
+                </div>
+            </button>
+        </div>
+
+        <!-- QUIZ -->
+        <div id="quiz">
+            <div class="header">
+                <button class="back-btn" id="backBtn">← Retour</button>
+                <span class="progress-text" id="progressText">1 / 26</span>
+                <span class="score" id="scoreDisplay">Score: 0/0</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="card">
+                <div class="photo-section">
+                    <div class="photo-container">
+                        <img id="photo" src="" alt="Sénateur">
+                    </div>
+                    <div class="info-container">
+                        <span class="fonction-badge" id="fonctionBadge"></span>
+                        <div class="groupe-politique" id="groupePolitique"></div>
+                    </div>
+                </div>
+
+                <div class="card-content">
+                    <!-- Flashcard mode -->
+                    <div id="flashcardContent">
+                        <div id="flashcardHidden">
+                            <button class="show-btn" id="showAnswerBtn">👁️ Voir le nom <span class="key-hint">[Entrée]</span></button>
+                        </div>
+                        <div id="flashcardRevealed" class="hidden">
+                            <div class="answer-display">
+                                <div class="name" id="revealedName"></div>
+                                <div class="fonction" id="revealedFonction"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QCM mode -->
+                    <div id="qcmContent" class="hidden">
+                        <div class="qcm-step-indicator">
+                            <span class="step-dot" id="stepDot1"></span>
+                            <span class="step-dot" id="stepDot2"></span>
+                        </div>
+                        <p class="qcm-question" id="qcmQuestion">Qui est ce sénateur ?</p>
+                        <div id="qcmNameResult" class="qcm-name-result hidden">
+                            <div class="name" id="qcmCorrectName"></div>
+                        </div>
+                        <div class="qcm-options" id="qcmOptions"></div>
+                        <div class="feedback hidden" id="qcmFeedback"></div>
+                    </div>
+
+                    <!-- Quiz libre mode -->
+                    <div id="libreContent" class="hidden">
+                        <div id="libreInput">
+                            <input type="text" class="quiz-input" id="answerInput" placeholder="Entrez le nom...">
+                            <button class="check-btn" id="checkBtn">Vérifier <span class="key-hint">[Entrée]</span></button>
+                        </div>
+                        <div id="libreResult" class="hidden">
+                            <div class="answer-display">
+                                <div class="name" id="libreCorrectName"></div>
+                            </div>
+                            <div class="feedback" id="libreFeedback"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" id="prevBtn">← Précédent <span class="key-hint">[←]</span></button>
+                    <button class="nav-btn primary" id="nextBtn">Suivant → <span class="key-hint">[→]</span></button>
+                </div>
+            </div>
+
+            <div class="final-score hidden" id="finalScore">
+                <h3>🎉 Quiz terminé !</h3>
+                <p id="finalScoreText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Membres du Bureau du Sénat (26)
+        const bureauMembers = [
+            { nom: "LARCHER", prenom: "Gérard", fonction: "Président", type: "president", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/larcher_gerard86034e_carre.jpg", category: "bureau" },
+            { nom: "MANDELLI", prenom: "Didier", fonction: "Vice-président", type: "vice", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/mandelli_didier14031r_carre.jpg", category: "bureau" },
+            { nom: "ROBERT", prenom: "Sylvie", fonction: "Vice-présidente", type: "vice", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/robert_sylvie14229s_carre.jpg", category: "bureau" },
+            { nom: "VERMEILLET", prenom: "Sylvie", fonction: "Vice-présidente", type: "vice", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/vermeillet_sylvie19479g_carre.jpg", category: "bureau" },
+            { nom: "IACOVELLI", prenom: "Xavier", fonction: "Vice-président", type: "vice", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/iacovelli_xavier19591f_carre.jpg", category: "bureau" },
+            { nom: "MARC", prenom: "Alain", fonction: "Vice-président", type: "vice", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/marc_alain14111d_carre.jpg", category: "bureau" },
+            { nom: "OUZOULIAS", prenom: "Pierre", fonction: "Vice-président", type: "vice", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/ouzoulias_pierre19593h_carre.jpg", category: "bureau" },
+            { nom: "CHAIN-LARCHÉ", prenom: "Anne", fonction: "Vice-présidente", type: "vice", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/chain_larche_anne14329v_carre.jpg", category: "bureau" },
+            { nom: "HERVÉ", prenom: "Loïc", fonction: "Vice-président", type: "vice", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/herve_loic14179a_carre.jpg", category: "bureau" },
+            { nom: "LEFÈVRE", prenom: "Antoine", fonction: "Questeur", type: "questeur", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/lefevre_antoine08010l_carre.jpg", category: "bureau" },
+            { nom: "CARLOTTI", prenom: "Marie-Arlette", fonction: "Questeur", type: "questeur", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/carlotti_marie_arlette12028b_carre.jpg", category: "bureau" },
+            { nom: "CIGOLOTTI", prenom: "Olivier", fonction: "Questeur", type: "questeur", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/cigolotti_olivier14267y_carre.jpg", category: "bureau" },
+            { nom: "ARNAUD", prenom: "Jean-Michel", fonction: "Secrétaire", type: "secretaire", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/arnaud_jean_michel14189c_carre.jpg", category: "bureau" },
+            { nom: "BENARROCHE", prenom: "Guy", fonction: "Secrétaire", type: "secretaire", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/benarroche_guy20110q_carre.jpg", category: "bureau" },
+            { nom: "BONHOMME", prenom: "François", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/bonhomme_francois14069u_carre.jpg", category: "bureau" },
+            { nom: "BONNEFOY", prenom: "Nicole", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/bonnefoy_nicole08060w_carre.jpg", category: "bureau" },
+            { nom: "BORCHIO FONTIMP", prenom: "Alexandra", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/borchio_fontimp_alexandra20138d_carre.jpg", category: "bureau" },
+            { nom: "BRULIN", prenom: "Céline", fonction: "Secrétaire", type: "secretaire", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/brulin_celine19758l_carre.jpg", category: "bureau" },
+            { nom: "BUIS", prenom: "Bernard", fonction: "Secrétaire", type: "secretaire", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/buis_bernard19782l_carre.jpg", category: "bureau" },
+            { nom: "CONCONNE", prenom: "Catherine", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/conconne_catherine19295a_carre.jpg", category: "bureau" },
+            { nom: "DI FOLCO", prenom: "Catherine", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/di_folco_catherine14215l_carre.jpg", category: "bureau" },
+            { nom: "GENET", prenom: "Fabien", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/genet_fabien20120s_carre.jpg", category: "bureau" },
+            { nom: "GUILLOTIN", prenom: "Véronique", fonction: "Secrétaire", type: "secretaire", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/guillotin_veronique19553y_carre.jpg", category: "bureau" },
+            { nom: "de LA PROVÔTÉ", prenom: "Sonia", fonction: "Secrétaire", type: "secretaire", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/de_la_provote_sonia19735d_carre.jpg", category: "bureau" },
+            { nom: "RICHER", prenom: "Marie-Pierre", fonction: "Secrétaire", type: "secretaire", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/richer_marie_pierre19798u_carre.jpg", category: "bureau" },
+            { nom: "VALLET", prenom: "Mickaël", fonction: "Secrétaire", type: "secretaire", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/vallet_mickael20064c_carre.jpg", category: "bureau" },
+        ];
+
+        // Membres du Comité de déontologie parlementaire (9)
+        const cdpMembers = [
+            { nom: "BAZIN", prenom: "Arnaud", fonction: "Président CDP", type: "cdp", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/bazin_arnaud19667j_carre.jpg", category: "cdp" },
+            { nom: "HARRIBEY", prenom: "Laurence", fonction: "Vice-Présidente CDP", type: "cdp", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/harribey_laurence19725b_carre.jpg", category: "cdp" },
+            { nom: "BACCHI", prenom: "Jérémy", fonction: "Membre CDP", type: "cdp", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/bacchi_jeremy20112s_carre.jpg", category: "cdp" },
+            { nom: "CABANEL", prenom: "Henri", fonction: "Membre CDP", type: "cdp", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/cabanel_henri14207l_carre.jpg", category: "cdp" },
+            { nom: "CAPUS", prenom: "Emmanuel", fonction: "Membre CDP", type: "cdp", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/capus_emmanuel19545y_carre.jpg", category: "cdp" },
+            { nom: "FERNIQUE", prenom: "Jacques", fonction: "Membre CDP", type: "cdp", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/fernique_jacques20100n_carre.jpg", category: "cdp" },
+            { nom: "IMBERT", prenom: "Corinne", fonction: "Membre CDP", type: "cdp", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/imbert_corinne14213j_carre.jpg", category: "cdp" },
+            { nom: "LEVI", prenom: "Pierre-Antoine", fonction: "Membre CDP", type: "cdp", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/levi_pierre_antoine20052x_carre.jpg", category: "cdp" },
+            { nom: "THÉOPHILE", prenom: "Dominique", fonction: "Membre CDP", type: "cdp", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/theophile_dominique19301e_carre.jpg", category: "cdp" },
+        ];
+
+        // Présidents de groupe (8)
+        const presGroupeMembers = [
+            { nom: "DARNAUD", prenom: "Mathieu", fonction: "Président groupe LR", type: "pres-groupe", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/darnaud_mathieu14259y_carre.jpg", category: "pres-groupe" },
+            { nom: "KANNER", prenom: "Patrick", fonction: "Président groupe SER", type: "pres-groupe", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/kanner_patrick14021p_carre.jpg", category: "pres-groupe" },
+            { nom: "MARSEILLE", prenom: "Hervé", fonction: "Président groupe UC", type: "pres-groupe", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/marseille_herve11085t_carre.jpg", category: "pres-groupe" },
+            { nom: "MALHURET", prenom: "Claude", fonction: "Président groupe LIRT", type: "pres-groupe", groupe: "Les Indépendants", groupeType: "lirt", avatar: "https://www.senat.fr/senimg/malhuret_claude14251q_carre.jpg", category: "pres-groupe" },
+            { nom: "PATRIAT", prenom: "François", fonction: "Président groupe RDPI", type: "pres-groupe", groupe: "RDPI", groupeType: "rdpi", avatar: "https://www.senat.fr/senimg/patriat_francois08061x_carre.jpg", category: "pres-groupe" },
+            { nom: "CUKIERMAN", prenom: "Cécile", fonction: "Présidente groupe CRCE-K", type: "pres-groupe", groupe: "CRCE-K", groupeType: "crce", avatar: "https://www.senat.fr/senimg/cukierman_cecile11056n_carre.jpg", category: "pres-groupe" },
+            { nom: "CARRÈRE", prenom: "Maryse", fonction: "Présidente groupe RDSE", type: "pres-groupe", groupe: "RDSE", groupeType: "rdse", avatar: "https://www.senat.fr/senimg/carrere_maryse19629c_carre.jpg", category: "pres-groupe" },
+            { nom: "GONTARD", prenom: "Guillaume", fonction: "Président groupe EST", type: "pres-groupe", groupe: "Écologiste", groupeType: "est", avatar: "https://www.senat.fr/senimg/gontard_guillaume19347u_carre.jpg", category: "pres-groupe" },
+        ];
+
+        // Présidents de commission (7)
+        const presCommissionMembers = [
+            { nom: "LAFON", prenom: "Laurent", fonction: "Prés. com. Culture", type: "pres-commission", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/lafon_laurent19611r_carre.jpg", category: "pres-commission" },
+            { nom: "ESTROSI SASSONE", prenom: "Dominique", fonction: "Prés. com. Éco.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/estrosi_sassone_dominique14187a_carre.jpg", category: "pres-commission" },
+            { nom: "PERRIN", prenom: "Cédric", fonction: "Prés. com. Aff. étr.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/perrin_cedric14193x_carre.jpg", category: "pres-commission" },
+            { nom: "MOUILLER", prenom: "Philippe", fonction: "Prés. com. Aff. soc.", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/mouiller_philippe14071n_carre.jpg", category: "pres-commission" },
+            { nom: "LONGEOT", prenom: "Jean-François", fonction: "Prés. com. Aménag.", type: "pres-commission", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/longeot_jean_francois14219q_carre.jpg", category: "pres-commission" },
+            { nom: "RAYNAL", prenom: "Claude", fonction: "Prés. com. Finances", type: "pres-commission", groupe: "Socialiste, Écologiste et Républicain", groupeType: "ser", avatar: "https://www.senat.fr/senimg/raynal_claude14225n_carre.jpg", category: "pres-commission" },
+            { nom: "JOURDA", prenom: "Muriel", fonction: "Prés. com. Lois", type: "pres-commission", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/jourda_muriel19447x_carre.jpg", category: "pres-commission" },
+        ];
+
+        // Présidents de délégation (5)
+        const presDelegationMembers = [
+            { nom: "DELCROS", prenom: "Bernard", fonction: "Prés. dél. Coll. terr.", type: "pres-delegation", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/delcros_bernard14327t_carre.jpg", category: "pres-delegation" },
+            { nom: "VÉRIEN", prenom: "Dominique", fonction: "Prés. dél. Droits femmes", type: "pres-delegation", groupe: "Union Centriste", groupeType: "uc", avatar: "https://www.senat.fr/senimg/verien_dominique19749k_carre.jpg", category: "pres-delegation" },
+            { nom: "RIETMANN", prenom: "Olivier", fonction: "Prés. dél. Entreprises", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/rietmann_olivier20054a_carre.jpg", category: "pres-delegation" },
+            { nom: "JACQUES", prenom: "Micheline", fonction: "Prés. dél. Outre-mer", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/jacques_micheline20034v_carre.jpg", category: "pres-delegation" },
+            { nom: "LAVARDE", prenom: "Christine", fonction: "Prés. dél. Prospective", type: "pres-delegation", groupe: "Les Républicains", groupeType: "lr", avatar: "https://www.senat.fr/senimg/lavarde_christine19711u_carre.jpg", category: "pres-delegation" },
+        ];
+
+        // Tous les membres
+        const allMembers = [...bureauMembers, ...cdpMembers, ...presGroupeMembers, ...presCommissionMembers, ...presDelegationMembers];
+
+        // Liste des groupes uniques pour le QCM
+        const groupes = [...new Set(allMembers.map(m => m.groupe))];
+
+        // Délai avant passage automatique (en ms)
+        const AUTO_NEXT_DELAY = 1200;
+
+        // État de l'application
+        let activeFilters = new Set(['bureau']);
+        let currentMode = '';
+        let filteredMembers = [];
+        let shuffledMembers = [];
+        let currentIndex = 0;
+        let score = { correct: 0, total: 0 };
+        let answered = false;
+        let qcmStep = 1;
+        let autoNextTimeout = null;
+
+        // Éléments DOM
+        const menu = document.getElementById('menu');
+        const quiz = document.getElementById('quiz');
+        const photo = document.getElementById('photo');
+        const fonctionBadge = document.getElementById('fonctionBadge');
+        const groupePolitique = document.getElementById('groupePolitique');
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const filterCount = document.getElementById('filterCount');
+
+        // Fonction de normalisation (accents, tirets, espaces, casse)
+        function normalize(str) {
+            return str
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[-\s]/g, "");
+        }
+
+        // Obtenir les membres filtrés (sans doublons)
+        function getFilteredMembers() {
+            const members = [];
+            const seen = new Set();
+
+            if (activeFilters.has('bureau')) {
+                bureauMembers.forEach(m => {
+                    if (!seen.has(m.nom)) {
+                        members.push(m);
+                        seen.add(m.nom);
+                    }
+                });
+            }
+            if (activeFilters.has('cdp')) {
+                cdpMembers.forEach(m => {
+                    if (!seen.has(m.nom)) {
+                        members.push(m);
+                        seen.add(m.nom);
+                    }
+                });
+            }
+            if (activeFilters.has('pres-groupe')) {
+                presGroupeMembers.forEach(m => {
+                    if (!seen.has(m.nom)) {
+                        members.push(m);
+                        seen.add(m.nom);
+                    }
+                });
+            }
+            if (activeFilters.has('pres-commission')) {
+                presCommissionMembers.forEach(m => {
+                    if (!seen.has(m.nom)) {
+                        members.push(m);
+                        seen.add(m.nom);
+                    }
+                });
+            }
+            if (activeFilters.has('pres-delegation')) {
+                presDelegationMembers.forEach(m => {
+                    if (!seen.has(m.nom)) {
+                        members.push(m);
+                        seen.add(m.nom);
+                    }
+                });
+            }
+
+            return members;
+        }
+
+        // Mettre à jour le compteur
+        function updateFilterCount() {
+            const count = getFilteredMembers().length;
+            filterCount.textContent = `${count} sénateur${count > 1 ? 's' : ''} sélectionné${count > 1 ? 's' : ''}`;
+
+            // Désactiver les boutons de mode si aucun filtre actif
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.disabled = count === 0;
+            });
+        }
+
+        // Filtres (toggle)
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+
+                if (activeFilters.has(filter)) {
+                    activeFilters.delete(filter);
+                    btn.classList.remove('active');
+                } else {
+                    activeFilters.add(filter);
+                    btn.classList.add('active');
+                }
+
+                updateFilterCount();
+            });
+        });
+
+        // Boutons de mode
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                currentMode = btn.dataset.mode;
+                startQuiz();
+            });
+        });
+
+        // Retour
+        document.getElementById('backBtn').addEventListener('click', () => {
+            clearTimeout(autoNextTimeout);
+            menu.style.display = 'block';
+            quiz.style.display = 'none';
+        });
+
+        // Fonction shuffle
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Démarrer le quiz
+        function startQuiz() {
+            clearTimeout(autoNextTimeout);
+
+            filteredMembers = getFilteredMembers();
+            shuffledMembers = shuffle(filteredMembers);
+            currentIndex = 0;
+            score = { correct: 0, total: 0 };
+            answered = false;
+
+            menu.style.display = 'none';
+            quiz.style.display = 'block';
+            document.getElementById('finalScore').classList.add('hidden');
+
+            document.getElementById('flashcardContent').classList.add('hidden');
+            document.getElementById('qcmContent').classList.add('hidden');
+            document.getElementById('libreContent').classList.add('hidden');
+
+            if (currentMode === 'qcm') {
+                groupePolitique.classList.add('hidden');
+            } else {
+                groupePolitique.classList.remove('hidden');
+            }
+
+            if (currentMode === 'flashcard') {
+                document.getElementById('flashcardContent').classList.remove('hidden');
+            } else if (currentMode === 'qcm') {
+                document.getElementById('qcmContent').classList.remove('hidden');
+            } else {
+                document.getElementById('libreContent').classList.remove('hidden');
+            }
+
+            showCard();
+        }
+
+        // Afficher une carte
+        function showCard() {
+            clearTimeout(autoNextTimeout);
+            const member = shuffledMembers[currentIndex];
+            answered = false;
+            qcmStep = 1;
+
+            photo.src = member.avatar;
+            fonctionBadge.textContent = member.fonction;
+
+            // Badge type
+            let badgeClass = 'badge-' + member.type;
+            if (member.type === 'cdp') badgeClass = 'badge-cdp';
+            if (member.type === 'pres-groupe') badgeClass = 'badge-pres-groupe';
+            if (member.type === 'pres-commission') badgeClass = 'badge-pres-commission';
+            if (member.type === 'pres-delegation') badgeClass = 'badge-pres-delegation';
+            fonctionBadge.className = 'fonction-badge ' + badgeClass;
+
+            // En mode QCM, cacher la fonction si elle révèle le groupe
+            if (currentMode === 'qcm') {
+                groupePolitique.classList.add('hidden');
+                // Pour les présidents de groupe, afficher un texte générique
+                if (member.type === 'pres-groupe') {
+                    fonctionBadge.textContent = 'Président(e) de groupe';
+                }
+                // Pour les présidents de commission, afficher un texte générique
+                if (member.type === 'pres-commission') {
+                    fonctionBadge.textContent = 'Président(e) de commission';
+                }
+                // Pour les présidents de délégation, afficher un texte générique
+                if (member.type === 'pres-delegation') {
+                    fonctionBadge.textContent = 'Président(e) de délégation';
+                }
+            } else {
+                groupePolitique.innerHTML = `<span class="groupe-badge groupe-${member.groupeType}">${member.groupe}</span>`;
+                groupePolitique.classList.remove('hidden');
+            }
+
+            progressText.textContent = `${currentIndex + 1} / ${shuffledMembers.length}`;
+            progressFill.style.width = `${((currentIndex + 1) / shuffledMembers.length) * 100}%`;
+            scoreDisplay.textContent = `Score: ${score.correct}/${score.total}`;
+
+            prevBtn.disabled = currentIndex === 0;
+            updateNextButton();
+
+            if (currentMode === 'flashcard') {
+                document.getElementById('flashcardHidden').classList.remove('hidden');
+                document.getElementById('flashcardRevealed').classList.add('hidden');
+            } else if (currentMode === 'qcm') {
+                setupQCMStep1(member);
+            } else {
+                document.getElementById('libreInput').classList.remove('hidden');
+                document.getElementById('libreResult').classList.add('hidden');
+                document.getElementById('answerInput').value = '';
+                document.getElementById('answerInput').focus();
+            }
+
+            document.getElementById('finalScore').classList.add('hidden');
+        }
+
+        function updateNextButton() {
+            if (currentIndex === shuffledMembers.length - 1 && answered) {
+                nextBtn.innerHTML = '🔄 Recommencer <span class="key-hint">[→]</span>';
+            } else {
+                nextBtn.innerHTML = 'Suivant → <span class="key-hint">[→]</span>';
+            }
+
+            if (currentMode === 'flashcard') {
+                nextBtn.disabled = false;
+            } else {
+                nextBtn.disabled = !answered;
+            }
+        }
+
+        // Auto next
+        function scheduleAutoNext() {
+            clearTimeout(autoNextTimeout);
+            autoNextTimeout = setTimeout(() => {
+                if (currentIndex === shuffledMembers.length - 1) {
+                    showFinalScore();
+                } else {
+                    goNext();
+                }
+            }, AUTO_NEXT_DELAY);
+        }
+
+        // Flashcard
+        document.getElementById('showAnswerBtn').addEventListener('click', revealFlashcard);
+
+        function revealFlashcard() {
+            const member = shuffledMembers[currentIndex];
+            document.getElementById('flashcardHidden').classList.add('hidden');
+            document.getElementById('flashcardRevealed').classList.remove('hidden');
+            document.getElementById('revealedName').textContent = `${member.prenom} ${member.nom}`;
+            document.getElementById('revealedFonction').textContent = member.fonction;
+            answered = true;
+            updateNextButton();
+            scheduleAutoNext();
+        }
+
+        // QCM Step 1 - Nom
+        function setupQCMStep1(correctMember) {
+            qcmStep = 1;
+            document.getElementById('stepDot1').className = 'step-dot active';
+            document.getElementById('stepDot2').className = 'step-dot';
+            document.getElementById('qcmQuestion').textContent = 'Qui est ce sénateur ?';
+            document.getElementById('qcmNameResult').classList.add('hidden');
+            document.getElementById('qcmFeedback').classList.add('hidden');
+
+            const others = allMembers.filter(m => m.nom !== correctMember.nom);
+            const wrongOptions = shuffle(others).slice(0, 3);
+            const options = shuffle([correctMember, ...wrongOptions]);
+
+            const container = document.getElementById('qcmOptions');
+            container.innerHTML = '';
+
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'qcm-option';
+                btn.textContent = `${option.prenom} ${option.nom}`;
+                btn.addEventListener('click', () => handleQCMStep1Click(btn, option, correctMember));
+                container.appendChild(btn);
+            });
+        }
+
+        function handleQCMStep1Click(btn, selected, correct) {
+            if (qcmStep !== 1) return;
+
+            const isCorrect = selected.nom === correct.nom;
+            score.total++;
+            if (isCorrect) score.correct++;
+
+            document.querySelectorAll('.qcm-option').forEach(b => {
+                b.disabled = true;
+                if (b.textContent === `${correct.prenom} ${correct.nom}`) {
+                    b.classList.add('correct');
+                }
+            });
+
+            if (!isCorrect) {
+                btn.classList.add('incorrect');
+            }
+
+            scoreDisplay.textContent = `Score: ${score.correct}/${score.total}`;
+
+            setTimeout(() => {
+                setupQCMStep2(correct);
+            }, AUTO_NEXT_DELAY);
+        }
+
+        // QCM Step 2 - Groupe politique
+        function setupQCMStep2(correctMember) {
+            qcmStep = 2;
+            document.getElementById('stepDot1').className = 'step-dot done';
+            document.getElementById('stepDot2').className = 'step-dot active';
+            document.getElementById('qcmQuestion').textContent = 'À quel groupe appartient-il/elle ?';
+
+            // Garder le groupe caché jusqu'à la réponse
+            groupePolitique.classList.add('hidden');
+
+            document.getElementById('qcmNameResult').classList.remove('hidden');
+            document.getElementById('qcmCorrectName').textContent = `${correctMember.prenom} ${correctMember.nom}`;
+            document.getElementById('qcmFeedback').classList.add('hidden');
+
+            const otherGroupes = groupes.filter(g => g !== correctMember.groupe);
+            const wrongGroupes = shuffle(otherGroupes).slice(0, 3);
+            const options = shuffle([correctMember.groupe, ...wrongGroupes]);
+
+            const container = document.getElementById('qcmOptions');
+            container.innerHTML = '';
+
+            options.forEach(groupe => {
+                const btn = document.createElement('button');
+                btn.className = 'qcm-option';
+                btn.textContent = groupe;
+                btn.addEventListener('click', () => handleQCMStep2Click(btn, groupe, correctMember));
+                container.appendChild(btn);
+            });
+        }
+
+        function handleQCMStep2Click(btn, selectedGroupe, correct) {
+            if (qcmStep !== 2) return;
+
+            const isCorrect = selectedGroupe === correct.groupe;
+            score.total++;
+            if (isCorrect) score.correct++;
+
+            document.querySelectorAll('.qcm-option').forEach(b => {
+                b.disabled = true;
+                if (b.textContent === correct.groupe) {
+                    b.classList.add('correct');
+                }
+            });
+
+            if (!isCorrect) {
+                btn.classList.add('incorrect');
+            }
+
+            // Révéler le groupe politique après la réponse
+            groupePolitique.innerHTML = `<span class="groupe-badge groupe-${correct.groupeType}">${correct.groupe}</span>`;
+            groupePolitique.classList.remove('hidden');
+
+            // Révéler la vraie fonction
+            fonctionBadge.textContent = correct.fonction;
+
+            const feedback = document.getElementById('qcmFeedback');
+            feedback.classList.remove('hidden', 'correct', 'incorrect');
+            feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = isCorrect ? '✓ Correct !' : `✗ C'était ${correct.groupe}`;
+
+            scoreDisplay.textContent = `Score: ${score.correct}/${score.total}`;
+            document.getElementById('stepDot2').className = 'step-dot done';
+
+            answered = true;
+            updateNextButton();
+            scheduleAutoNext();
+        }
+
+        // Quiz libre
+        document.getElementById('checkBtn').addEventListener('click', checkLibreAnswer);
+        document.getElementById('answerInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkLibreAnswer();
+        });
+
+        function checkLibreAnswer() {
+            if (answered) return;
+            answered = true;
+
+            const member = shuffledMembers[currentIndex];
+            const input = document.getElementById('answerInput').value;
+
+            const userAnswer = normalize(input);
+            const correctNom = normalize(member.nom);
+
+            const isCorrect = userAnswer.includes(correctNom) ||
+                             (correctNom.includes(userAnswer) && userAnswer.length > 3);
+
+            score.total++;
+            if (isCorrect) score.correct++;
+
+            document.getElementById('libreInput').classList.add('hidden');
+            document.getElementById('libreResult').classList.remove('hidden');
+            document.getElementById('libreCorrectName').textContent = `${member.prenom} ${member.nom}`;
+
+            const feedback = document.getElementById('libreFeedback');
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = isCorrect ? '✓ Correct !' : '✗ Incorrect';
+
+            scoreDisplay.textContent = `Score: ${score.correct}/${score.total}`;
+            updateNextButton();
+            scheduleAutoNext();
+        }
+
+        // Navigation
+        prevBtn.addEventListener('click', goPrev);
+        nextBtn.addEventListener('click', goNext);
+
+        function goPrev() {
+            clearTimeout(autoNextTimeout);
+            if (currentIndex > 0) {
+                currentIndex--;
+                showCard();
+            }
+        }
+
+        function goNext() {
+            clearTimeout(autoNextTimeout);
+            if (currentIndex === shuffledMembers.length - 1 && answered) {
+                startQuiz();
+            } else if (currentIndex < shuffledMembers.length - 1 && (answered || currentMode === 'flashcard')) {
+                currentIndex++;
+                showCard();
+            }
+        }
+
+        // Navigation clavier
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                return;
+            }
+
+            if (quiz.style.display === 'none') return;
+
+            switch(e.key) {
+                case 'ArrowLeft':
+                    if (!prevBtn.disabled) {
+                        e.preventDefault();
+                        goPrev();
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (!nextBtn.disabled) {
+                        e.preventDefault();
+                        goNext();
+                    }
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (currentMode === 'flashcard' && !answered) {
+                        revealFlashcard();
+                    } else if (!nextBtn.disabled) {
+                        goNext();
+                    }
+                    break;
+            }
+        });
+
+        // Score final
+        function showFinalScore() {
+            clearTimeout(autoNextTimeout);
+            const finalScore = document.getElementById('finalScore');
+            const percentage = Math.round((score.correct / score.total) * 100);
+            document.getElementById('finalScoreText').textContent =
+                `Score final : ${score.correct} / ${score.total} (${percentage}%)`;
+            finalScore.classList.remove('hidden');
+        }
+
+        // Initialisation
+        updateFilterCount();
+    </script>
+</body>
+</html>
