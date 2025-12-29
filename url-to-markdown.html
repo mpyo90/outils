@@ -88,6 +88,10 @@
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             white-space: nowrap;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         button:hover {
@@ -121,22 +125,17 @@
             background-color: #68856f !important;
         }
 
-        #cleanBtn.loading {
-            position: relative;
-        }
-
         #cleanBtn.loading::after {
             content: '';
-            position: absolute;
+            display: inline-block;
             width: 14px;
             height: 14px;
-            top: 50%;
-            right: 15px;
-            margin-top: -7px;
+            margin-left: 10px;
             border: 2px solid #ffffff;
             border-radius: 50%;
             border-top-color: transparent;
             animation: spinner 0.8s linear infinite;
+            flex-shrink: 0;
         }
 
         @keyframes spinner {
