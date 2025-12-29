@@ -36,9 +36,15 @@
 - **Style sobre** : privilégier un ton neutre et professionnel dans tous les textes d'interface
 
 ### Design et interface
+- **Palette de couleurs inspirée de Claude** :
+  - Fond : beige/crème clair (#f5f5f0 ou similaire)
+  - Boutons primaires : orange terracotta (#cc785c ou #d97757)
+  - Boutons secondaires : gris doux ou contours
+  - Texte : gris foncé (#2d2d2d ou #333)
+  - Design minimaliste, épuré et chaleureux
 - **Privilégier un design sobre et élégant** :
-  - Éviter les couleurs criardes, saturées ou trop vives (ex : indigo)
-  - Préférer des palettes neutres et douces
+  - Éviter les couleurs criardes, saturées ou trop vives (ex : indigo, bleu électrique)
+  - Préférer des palettes neutres, douces et chaleureuses
   - Assurer un bon contraste entre le fond et le contenu
 - **Cohérence visuelle** :
   - Utiliser une palette de couleurs limitée et harmonieuse
