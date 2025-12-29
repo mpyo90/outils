@@ -720,6 +720,32 @@
         // Tous les membres
         const allMembers = [...bureauMembers, ...cdpMembers, ...presGroupeMembers, ...presCommissionMembers, ...presDelegationMembers];
 
+        // Fonction pour déterminer le genre basé sur le prénom
+        function getGenre(prenom) {
+            const prenomLower = prenom.toLowerCase();
+            const prenomsfeminins = ['marie', 'sylvie', 'anne', 'nicole', 'alexandra', 'céline', 'catherine', 'sonia', 'véronique', 'laurence', 'corinne', 'cécile', 'maryse', 'muriel', 'micheline', 'christine'];
+            const prenomsMasculins = ['gérard', 'didier', 'xavier', 'alain', 'pierre', 'loïc', 'antoine', 'olivier', 'jean-michel', 'guy', 'françois', 'bernard', 'fabien', 'mickaël', 'arnaud', 'jérémy', 'henri', 'emmanuel', 'jacques', 'pierre-antoine', 'mathieu', 'patrick', 'hervé', 'guillaume', 'laurent', 'cédric', 'philippe', 'jean-françois'];
+
+            // Cas spéciaux : Claude et Dominique peuvent être mixtes
+            if (prenomLower.includes('marie') || prenomLower.includes('arlette')) return 'F';
+
+            for (const p of prenomsfeminins) {
+                if (prenomLower.includes(p)) return 'F';
+            }
+            for (const p of prenomsMasculins) {
+                if (prenomLower.includes(p)) return 'M';
+            }
+
+            // Par défaut, si on ne trouve pas, on regarde les terminaisons
+            if (prenomLower.endsWith('e') || prenomLower.endsWith('a')) return 'F';
+            return 'M';
+        }
+
+        // Ajouter le genre à tous les membres
+        allMembers.forEach(m => {
+            m.genre = getGenre(m.prenom);
+        });
+
         // Liste des groupes uniques pour le QCM
         const groupes = [...new Set(allMembers.map(m => m.groupe))];
 
@@ -915,8 +941,8 @@
             if (member.type === 'pres-delegation') badgeClass = 'badge-pres-delegation';
             fonctionBadge.className = 'fonction-badge ' + badgeClass;
 
-            // En mode QCM, cacher la fonction si elle révèle le groupe
-            if (currentMode === 'qcm') {
+            // En mode QCM et Flashcard, cacher le groupe politique
+            if (currentMode === 'qcm' || currentMode === 'flashcard') {
                 groupePolitique.classList.add('hidden');
                 // Pour les présidents de groupe, afficher un texte générique
                 if (member.type === 'pres-groupe') {
@@ -992,6 +1018,14 @@
             document.getElementById('flashcardRevealed').classList.remove('hidden');
             document.getElementById('revealedName').textContent = `${member.prenom} ${member.nom}`;
             document.getElementById('revealedFonction').textContent = member.fonction;
+
+            // Révéler le groupe politique
+            groupePolitique.innerHTML = `<span class="groupe-badge groupe-${member.groupeType}">${member.groupe}</span>`;
+            groupePolitique.classList.remove('hidden');
+
+            // Révéler la vraie fonction (au cas où elle était masquée)
+            fonctionBadge.textContent = member.fonction;
+
             answered = true;
             updateNextButton();
             scheduleAutoNext();
@@ -1006,7 +1040,8 @@
             document.getElementById('qcmNameResult').classList.add('hidden');
             document.getElementById('qcmFeedback').classList.add('hidden');
 
-            const others = allMembers.filter(m => m.nom !== correctMember.nom);
+            // Filtrer par genre pour rendre le quiz plus difficile
+            const others = allMembers.filter(m => m.nom !== correctMember.nom && m.genre === correctMember.genre);
             const wrongOptions = shuffle(others).slice(0, 3);
             const options = shuffle([correctMember, ...wrongOptions]);
 
