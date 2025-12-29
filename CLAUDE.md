@@ -28,6 +28,12 @@
 - Code lisible et maintenable
 - Commentaires en français
 - Noms de variables explicites
+- **Rédaction en français correct** :
+  - Respecter les règles typographiques françaises
+  - Pas de majuscules intempestives (ex : éviter "Cliquez sur le Bouton" → préférer "Cliquez sur le bouton")
+  - Seuls les noms propres, débuts de phrase et titres prennent une majuscule
+  - Utiliser les accents correctement (É, è, à, ù, etc.)
+- **Style sobre** : privilégier un ton neutre et professionnel dans tous les textes d'interface
 
 ### Design et interface
 - **Privilégier un design sobre et élégant** :
@@ -39,12 +45,36 @@
   - Maintenir la cohérence dans les éléments similaires (boutons, notifications, focus)
 - **Espacements suffisants** : prévoir des marges adéquates entre les sections pour une lecture confortable
 - **Effets subtils** : privilégier les ombres douces et les transitions légères
+- **Design responsive obligatoire** :
+  - Toujours utiliser `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+  - Utiliser des media queries pour adapter l'interface aux mobiles, tablettes et ordinateurs
+  - Tester la lisibilité et l'utilisabilité sur tous les formats d'écran
+  - Prévoir des boutons et zones tactiles suffisamment grandes pour mobile (minimum 44x44px)
 
 ## APIs externes
 - Utiliser uniquement des APIs qui supportent CORS (Cross-Origin Resource Sharing)
 - Avant d'intégrer une API, vérifier qu'elle autorise les appels depuis le navigateur
 - Privilégier les APIs publiques sans authentification quand c'est possible
 - Pour les APIs nécessitant une clé, stocker la clé dans localStorage (jamais en dur dans le code)
+
+## Sécurité
+- **Validation des entrées utilisateur** :
+  - Toujours valider et nettoyer les données entrées par l'utilisateur
+  - Ne jamais faire confiance aux données provenant de l'utilisateur ou d'APIs externes
+- **Prévention XSS (Cross-Site Scripting)** :
+  - Utiliser `textContent` au lieu de `innerHTML` pour afficher du contenu utilisateur
+  - Si `innerHTML` est nécessaire, sanitiser le contenu avec DOMPurify ou équivalent
+  - Éviter `eval()`, `Function()` et les gestionnaires d'événements inline avec données utilisateur
+- **Prévention des injections** :
+  - Ne jamais construire du HTML/SQL/code dynamiquement avec des concaténations de strings
+  - Utiliser des méthodes sûres du DOM (createElement, setAttribute, etc.)
+- **Gestion des données sensibles** :
+  - Ne jamais stocker de mots de passe ou données sensibles en clair
+  - Avertir l'utilisateur si des données sont stockées dans localStorage
+  - Ne pas logger de données sensibles dans la console
+- **Content Security Policy** :
+  - Éviter les scripts inline quand c'est possible (bien que nécessaire pour nos outils)
+  - Documenter les risques potentiels si applicable
 
 ## Ce qu'il ne faut PAS faire
 - Utiliser React, Vue, Angular ou tout framework nécessitant une compilation
