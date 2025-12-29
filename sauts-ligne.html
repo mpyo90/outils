@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppression des sauts de ligne</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .description {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #555;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            min-width: auto;
+            flex: 0;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✂️ Suppression des sauts de ligne</h1>
+        <p class="description">
+            Supprimez les sauts de ligne inutiles dans votre texte tout en préservant les paragraphes
+        </p>
+
+        <div class="section">
+            <div class="section-title">
+                <span>📝 Texte original</span>
+                <button class="btn-secondary btn-small" onclick="clearInput()">Effacer</button>
+            </div>
+            <textarea id="input" placeholder="Collez votre texte ici..."></textarea>
+            <div class="stats" id="inputStats">
+                <div class="stat-item">
+                    <span class="stat-label">Caractères :</span>
+                    <span id="inputChars">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Lignes :</span>
+                    <span id="inputLines">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="processText()">🔄 Traiter le texte</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span>✨ Résultat</span>
+                <button class="btn-secondary btn-small" onclick="copyOutput()">📋 Copier</button>
+            </div>
+            <textarea id="output" placeholder="Le résultat apparaîtra ici..." readonly></textarea>
+            <div class="stats" id="outputStats">
+                <div class="stat-item">
+                    <span class="stat-label">Caractères :</span>
+                    <span id="outputChars">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Lignes :</span>
+                    <span id="outputLines">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Références aux éléments
+        const inputTextarea = document.getElementById('input');
+        const outputTextarea = document.getElementById('output');
+        const notification = document.getElementById('notification');
+
+        // Mise à jour des statistiques en temps réel
+        inputTextarea.addEventListener('input', () => updateStats('input'));
+        outputTextarea.addEventListener('input', () => updateStats('output'));
+
+        /**
+         * Met à jour les statistiques (caractères, lignes) pour une zone de texte
+         */
+        function updateStats(type) {
+            const textarea = type === 'input' ? inputTextarea : outputTextarea;
+            const text = textarea.value;
+            const chars = text.length;
+            const lines = text ? text.split('\n').length : 0;
+
+            document.getElementById(`${type}Chars`).textContent = chars;
+            document.getElementById(`${type}Lines`).textContent = lines;
+        }
+
+        /**
+         * Traite le texte en supprimant les sauts de ligne simples
+         * tout en préservant les paragraphes (doubles sauts de ligne ou plus)
+         */
+        function processText() {
+            const text = inputTextarea.value;
+
+            if (!text.trim()) {
+                showNotification('⚠️ Veuillez entrer du texte', 'warning');
+                return;
+            }
+
+            // Séparer le texte en paragraphes (séparés par au moins une ligne vide)
+            // On considère qu'un paragraphe est séparé par au moins deux \n consécutifs
+            const paragraphs = text.split(/\n\s*\n/);
+
+            // Pour chaque paragraphe, supprimer les sauts de ligne simples
+            const processedParagraphs = paragraphs.map(paragraph => {
+                // Remplacer les sauts de ligne simples par un espace
+                // En évitant les espaces multiples
+                return paragraph
+                    .replace(/\n/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }).filter(p => p.length > 0); // Supprimer les paragraphes vides
+
+            // Rejoindre les paragraphes avec deux sauts de ligne
+            const result = processedParagraphs.join('\n\n');
+
+            outputTextarea.value = result;
+            updateStats('output');
+            showNotification('✅ Texte traité avec succès');
+        }
+
+        /**
+         * Copie le contenu de la zone de résultat dans le presse-papier
+         */
+        async function copyOutput() {
+            const text = outputTextarea.value;
+
+            if (!text) {
+                showNotification('⚠️ Rien à copier', 'warning');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(text);
+                showNotification('✅ Copié dans le presse-papier');
+            } catch (err) {
+                // Fallback pour les navigateurs plus anciens
+                outputTextarea.select();
+                document.execCommand('copy');
+                showNotification('✅ Copié dans le presse-papier');
+            }
+        }
+
+        /**
+         * Efface le contenu de la zone de texte d'entrée
+         */
+        function clearInput() {
+            inputTextarea.value = '';
+            updateStats('input');
+            showNotification('🗑️ Texte effacé');
+        }
+
+        /**
+         * Affiche une notification temporaire
+         */
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.style.background = type === 'warning' ? '#ff9800' : '#4caf50';
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Initialiser les statistiques au chargement
+        updateStats('input');
+        updateStats('output');
+
+        // Permettre le traitement avec Ctrl+Enter
+        inputTextarea.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                processText();
+            }
+        });
+    </script>
+</body>
+</html>
