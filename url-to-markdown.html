@@ -697,7 +697,13 @@
                 // Initialiser Gemini
                 const genAI = new GoogleGenerativeAI(apiKey);
                 const model = genAI.getGenerativeModel({
-                    model: "gemini-3-flash-preview"
+                    model: "gemini-3-flash-preview",
+                    generationConfig: {
+                        temperature: 0.3,
+                        thinkingConfig: {
+                            thinkingLevel: "HIGH"
+                        }
+                    }
                 });
 
                 // Créer le prompt de nettoyage
