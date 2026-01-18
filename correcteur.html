@@ -1,4 +1,3 @@
-````html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -761,7 +760,7 @@ Respecte scrupuleusement cette structure pour chaque erreur :
           const base64 = arrayBufferToBase64(buffer);
           const prompt = makePrompt("pdf");
           parts = [
-            { inlineData: { mimeType: "application/pdf", data: base64 } },
+			{ inline_data: { mime_type: "application/pdf", data: base64 } },
             { text: prompt }
           ];
         } else {
