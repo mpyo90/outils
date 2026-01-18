@@ -1,3 +1,4 @@
+````html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -70,28 +71,28 @@
       color: #666;
     }
 
-	button {
-	  padding: 12px 24px;
-	  background-color: #cc785c;
-	  color: #ffffff;
-	  border: none;
-	  border-radius: 10px;
-	  font-size: 1em;
-	  font-weight: 650;
-	  cursor: pointer;
-	  transition: background-color 0.2s, transform 0.1s, color 0.2s;
-	  width: 100%;
-	}
+    button {
+      padding: 12px 24px;
+      background-color: #cc785c;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      font-weight: 650;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s, color 0.2s;
+      width: 100%;
+    }
 
-	button:hover:not(:disabled) { background-color: #b86a4e; }
-	button:active { transform: scale(0.98); }
+    button:hover:not(:disabled) { background-color: #b86a4e; }
+    button:active { transform: scale(0.98); }
 
-	button:disabled {
-	  background-color: #e6e6e6;
-	  color: #5f5f5f;
-	  cursor: not-allowed;
-	  transform: none;
-	}
+    button:disabled {
+      background-color: #e6e6e6;
+      color: #5f5f5f;
+      cursor: not-allowed;
+      transform: none;
+    }
 
     .info-text {
       font-size: 0.85em;
@@ -128,13 +129,13 @@
       margin-bottom: 16px;
     }
 
-	.errors-title {
-	  font-size: 1.15em;
-	  font-weight: 700;
-	  color: #cc785c;
-	  letter-spacing: 0.1px;
-	  line-height: 1.2;
-	}
+    .errors-title {
+      font-size: 1.15em;
+      font-weight: 700;
+      color: #cc785c;
+      letter-spacing: 0.1px;
+      line-height: 1.2;
+    }
 
     .empty-state {
       text-align: center;
@@ -188,24 +189,24 @@
       justify-content: space-between;
       gap: 12px;
       padding: 14px 16px;
-      background: #f2f1ec; 
+      background: #f2f1ec;
       border-bottom: 1px solid #eee;
     }
 
-	.err-title {
-	  font-weight: 650;
-	  color: #4a4a4a;
-	  line-height: 1.25;
-	  min-width: 0;
-	  white-space: nowrap;
-	  overflow: hidden;
-	  text-overflow: ellipsis;
-	}
+    .err-title {
+      font-weight: 650;
+      color: #4a4a4a;
+      line-height: 1.25;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-	.err-title .num {
-	  color: #cc785c;      /* petit accent */
-	  font-weight: 650;    /* pas de 900 */
-	}
+    .err-title .num {
+      color: #cc785c;
+      font-weight: 650;
+    }
 
     .err-body { padding: 14px 16px 16px; }
 
@@ -263,12 +264,12 @@
       word-break: break-word;
     }
 
-	.hl {
-	  background: transparent;
-	  padding: 0;
-	  border-radius: 0;
-	  font-weight: 800; /* le gras suffit */
-	}
+    .hl {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-weight: 800;
+    }
 
     .problem-line {
       margin-top: 12px;
@@ -376,14 +377,14 @@
       }
     }
 
-	function pluralizeErreur(n) {
-	  return n === 1 ? "erreur trouvée" : "erreurs trouvées";
-	}
+    function pluralizeErreur(n) {
+      return n === 1 ? "erreur trouvée" : "erreurs trouvées";
+    }
 
-	function setErrorsTitle(n) {
-	  const t = document.getElementById('errorsTitle');
-	  if (t) t.textContent = `Rapport de correction : ${n} ${pluralizeErreur(n)}`;
-	}
+    function setErrorsTitle(n) {
+      const t = document.getElementById('errorsTitle');
+      if (t) t.textContent = `Rapport de correction : ${n} ${pluralizeErreur(n)}`;
+    }
 
     function displayErrors(errors) {
       const resultsCard = document.getElementById('resultsCard');
@@ -419,7 +420,6 @@
           <div class="err-card">
             <div class="err-head">
               <div class="err-title" title="${escapeHtml(`Erreur n° ${id} : ${loc}`)}">
-
                 Erreur n° <span class="num">${escapeHtml(String(id))}</span> : ${escapeHtml(loc)}
               </div>
             </div>
@@ -490,16 +490,21 @@
 
   <!-- ✅ Mammoth pour DOCX -->
   <script
-  src="https://unpkg.com/mammoth@1.11.0/mammoth.browser.min.js"
-  integrity="sha384-t9eMqh3OtJXZhvLtmol8r2+23t6vg1GDo1UeyP55BEQdCI67GW2u8Nso+Yzo5m9r"
-  crossorigin="anonymous">
+    src="https://unpkg.com/mammoth@1.11.0/mammoth.browser.min.js"
+    integrity="sha384-t9eMqh3OtJXZhvLtmol8r2+23t6vg1GDo1UeyP55BEQdCI67GW2u8Nso+Yzo5m9r"
+    crossorigin="anonymous">
   </script>
 
-  <!-- ✅ Gemini + timeout 300s -->
-  <script type="module">
-    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
-
+  <!-- ✅ Gemini REST + timeout 300s (même modèle / config qu'avant) -->
+  <script>
     const CLIENT_TIMEOUT_MS = 300000; // ✅ 5 minutes
+
+    // ✅ même modèle que dans ton SDK avant
+    const GEMINI_MODEL = "gemini-3-flash-preview";
+
+    // Endpoint REST Gemini API
+    const GEMINI_ENDPOINT =
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
     function extLower(name) {
       const m = (name || "").toLowerCase().match(/\.([a-z0-9]+)$/);
@@ -548,39 +553,25 @@
       anotherBlock.style.display = "block";
     }
 
-    async function generateWithTimeout(model, parts, ms = CLIENT_TIMEOUT_MS) {
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("TIMEOUT_CLIENT_300S")), ms);
-      });
-
-      const reqPromise = model.generateContent({
-        contents: [{ role: "user", parts }]
-      });
-
-      return await Promise.race([reqPromise, timeoutPromise]);
-    }
-
-    function buildModel(genAI, { thinkingLevel, mediaResolution }) {
-      return genAI.getGenerativeModel({
-        model: "gemini-3-flash-preview",
-
-        generationConfig: {
-          temperature: 0.3,
-          thinkingConfig: { thinkingLevel },
-          mediaResolution
-        }
-      });
+    // ✅ fetch avec AbortController (timeout 300s)
+    async function fetchWithTimeout(url, options, ms = CLIENT_TIMEOUT_MS) {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), ms);
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        clearTimeout(t);
+      }
     }
 
     function isTimeout(err) {
-      const msg = (err?.message || "").toLowerCase();
-      return msg.includes("timeout_client_300s") || msg.includes("timeout");
+      return err?.name === "AbortError" || String(err?.message || "").toLowerCase().includes("timeout");
     }
 
     function makePrompt(kind /* "pdf" | "docx" */) {
       if (kind === "docx") {
         return `Tu es un correcteur professionnel.
-Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (ex : oubli d'un mot, fautes d'accord, de grammaire ou d'orthographe, erreur sur les noms propres) mais PAS sur le style ou le fond.
+Tu dois relire attentivement le document fourni et trouver toutes les coquilles et fautes à corriger sur la forme. Ta correction doit uniquement porter sur des erreurs et coquilles (ex : oubli d'un mot, fautes d'accord, de grammaire ou d'orthographe, erreur sur les noms propres) mais PAS sur le style ou le fond. Quand le mot est entièrement en majuscule, ne mentionne pas les absences d'accent.
 
 Le document est fourni sous forme de blocs repérés par des identifiants (ex: P12, H2-3, LI7).
 IMPORTANT : dans "localisation", tu dois mettre l'identifiant du bloc concerné sous une forme explicite (ex: "Paragraphe 12") — rien d'autre.
@@ -676,6 +667,55 @@ Respecte scrupuleusement cette structure pour chaque erreur :
       return s.slice(0, maxChars) + "\n\n[... contenu tronqué ...]";
     }
 
+    // ✅ Appel REST Gemini : même "parts" que ton ancien code
+    async function generateWithTimeoutREST(parts, ms = CLIENT_TIMEOUT_MS) {
+      let apiKey = localStorage.getItem("gemini-api-key");
+      if (!apiKey) {
+        apiKey = prompt(
+          "Entrez votre clé API Google Gemini :\n\nVous pouvez obtenir une clé sur :\nhttps://aistudio.google.com/app/apikey\n\n(Elle sera stockée localement dans votre navigateur)"
+        );
+        if (!apiKey || apiKey.trim() === "") return null;
+        apiKey = apiKey.trim();
+        localStorage.setItem("gemini-api-key", apiKey);
+        window.updateKeyManagementVisibility?.();
+      }
+
+      const url = `${GEMINI_ENDPOINT}?key=${encodeURIComponent(apiKey)}`;
+
+      // ✅ configuration identique à buildModel() avant
+      const body = {
+        contents: [{ role: "user", parts }],
+        generationConfig: {
+          temperature: 0.3,
+          thinkingConfig: { thinkingLevel: "MEDIUM" },
+          mediaResolution: "MEDIA_RESOLUTION_HIGH"
+        }
+        // ✅ PAS de tools => pas de Google Search
+      };
+
+      const res = await fetchWithTimeout(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      }, ms);
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        const msg = json?.error?.message || `HTTP ${res.status}`;
+        throw new Error(`Erreur API Gemini: ${msg}`);
+      }
+
+      // Récupère tout le texte retourné
+      const text =
+        json?.candidates?.[0]?.content?.parts
+          ?.map(p => (typeof p?.text === "string" ? p.text : ""))
+          .join("")
+          .trim() || "";
+
+      return text;
+    }
+
     async function correctDocument() {
       if (!window.selectedFile) {
         alert("Veuillez sélectionner un fichier");
@@ -692,17 +732,6 @@ Respecte scrupuleusement cette structure pour chaque erreur :
         document.getElementById("resultsCard").classList.add("visible");
         showBigErrorOnPage(new Error("Format non pris en charge."), "Formats acceptés : PDF, DOCX.");
         return;
-      }
-
-      let apiKey = localStorage.getItem("gemini-api-key");
-      if (!apiKey) {
-        apiKey = prompt(
-          "Entrez votre clé API Google Gemini :\n\nVous pouvez obtenir une clé sur :\nhttps://aistudio.google.com/app/apikey\n\n(Elle sera stockée localement dans votre navigateur)"
-        );
-        if (!apiKey || apiKey.trim() === "") return;
-        apiKey = apiKey.trim();
-        localStorage.setItem("gemini-api-key", apiKey);
-        window.updateKeyManagementVisibility?.();
       }
 
       const correctBtn = document.getElementById("correctBtn");
@@ -725,12 +754,6 @@ Respecte scrupuleusement cette structure pour chaque erreur :
         `;
 
         const buffer = await file.arrayBuffer();
-        const genAI = new GoogleGenerativeAI(apiKey);
-
-        const model = buildModel(genAI, {
-          thinkingLevel: "MEDIUM",
-          mediaResolution: "MEDIA_RESOLUTION_HIGH"
-        });
 
         let parts;
 
@@ -752,9 +775,10 @@ Respecte scrupuleusement cette structure pour chaque erreur :
           ];
         }
 
-        const result = await generateWithTimeout(model, parts, CLIENT_TIMEOUT_MS);
+        const responseTextRaw = await generateWithTimeoutREST(parts, CLIENT_TIMEOUT_MS);
+        if (responseTextRaw === null) return; // clé annulée
 
-        let responseText = (await result.response).text().trim();
+        let responseText = responseTextRaw.trim();
         if (responseText.startsWith("```")) {
           responseText = responseText
             .replace(/^```[a-z]*\s*/i, "")
@@ -788,3 +812,4 @@ Respecte scrupuleusement cette structure pour chaque erreur :
   </script>
 </body>
 </html>
+````
