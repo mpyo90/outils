@@ -327,7 +327,7 @@
       <button id="correctBtn" disabled>Analyser le document</button>
 
       <p class="info-text">
-        La correction est effectuée à l'aide du modèle Gemini 3.0 Flash et peut prendre de quelques secondes à 5 minutes.
+        La correction est effectuée à l'aide du modèle Gemini 3.8 Flash (réflexion moyenne) et peut prendre de quelques secondes à 5 minutes.
       </p>
 
       <div class="key-management" id="keyManagement" style="display: none;">
@@ -494,12 +494,12 @@
     crossorigin="anonymous">
   </script>
 
-  <!-- ✅ Gemini REST + timeout 300s (même modèle / config qu'avant) -->
+  <!-- Gemini 3.8 Flash REST + timeout 300s -->
   <script>
     const CLIENT_TIMEOUT_MS = 300000; // ✅ 5 minutes
 
-    // ✅ même modèle que dans ton SDK avant
-    const GEMINI_MODEL = "gemini-3-flash-preview";
+    // Modèle Flash stable, avec réflexion moyenne.
+    const GEMINI_MODEL = "gemini-3.8-flash";
 
     // Endpoint REST Gemini API
     const GEMINI_ENDPOINT =
@@ -681,11 +681,10 @@ Respecte scrupuleusement cette structure pour chaque erreur :
 
       const url = `${GEMINI_ENDPOINT}?key=${encodeURIComponent(apiKey)}`;
 
-      // ✅ configuration identique à buildModel() avant
+      // Gemini 3.8 Flash : réflexion moyenne, sans paramètre temperature.
       const body = {
         contents: [{ role: "user", parts }],
         generationConfig: {
-          temperature: 0.3,
           thinkingConfig: { thinkingLevel: "MEDIUM" },
           mediaResolution: "MEDIA_RESOLUTION_HIGH"
         }
